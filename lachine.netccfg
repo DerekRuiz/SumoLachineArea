@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 07/02/20 14:05:40 by Eclipse SUMO netconvert Version 1.6.0
+-->
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <type-files value="C:\Users\epicb\Documents\Sumo\data\typemap\osmNetconvert.typ.xml,C:\Users\epicb\Documents\Sumo\data\typemap\osmNetconvertUrbanDe.typ.xml,C:\Users\epicb\Documents\Sumo\data\typemap\osmNetconvertPedestrians.typ.xml,C:\Users\epicb\Documents\Sumo\data\typemap\osmNetconvertBicycle.typ.xml"/>
+        <osm-files value="lachine_bbox.osm.xml"/>
+    </input>
+
+    <output>
+        <output-file value="lachine.net.xml"/>
+        <output.street-names value="true"/>
+        <output.original-names value="true"/>
+    </output>
+
+    <processing>
+        <geometry.remove value="true"/>
+        <roundabouts.guess value="true"/>
+    </processing>
+
+    <tls_building>
+        <tls.discard-simple value="true"/>
+        <tls.join value="true"/>
+        <tls.guess-signals value="true"/>
+        <tls.default-type value="actuated"/>
+    </tls_building>
+
+    <ramp_guessing>
+        <ramps.guess value="true"/>
+    </ramp_guessing>
+
+    <junctions>
+        <junctions.join value="true"/>
+        <junctions.corner-detail value="5"/>
+    </junctions>
+
+    <pedestrian>
+        <crossings.guess value="true"/>
+    </pedestrian>
+
+    <report>
+        <verbose value="true"/>
+    </report>
+
+</configuration>
