@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 07/06/20 12:53:10 by Eclipse SUMO duarouter Version 1.6.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="lachine.net.xml"/>
+        <route-files value="Trips/tripLachine.truck.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="Trips/tripLachine.truck.trips.xml.tmp"/>
+        <write-trips value="true"/>
+    </output>
+
+    <time>
+        <begin value="0"/>
+        <end value="360.0"/>
+    </time>
+
+    <report>
+        <no-warnings value="true"/>
+        <ignore-errors value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="truck_truck" vClass="truck"/>
+    <trip id="truck0" type="truck_truck" depart="0.00" departLane="best" from="24874148" to="-164831311#0"/>
+    <trip id="truck1" type="truck_truck" depart="2.50" departLane="best" departSpeed="max" from="-316470906#6" to="-26158654#0"/>
+    <trip id="truck2" type="truck_truck" depart="5.00" departLane="best" from="476051971#0" to="-22662909#1"/>
+    <trip id="truck3" type="truck_truck" depart="7.50" departLane="best" from="-804254971#2" to="-164832328#3"/>
+    <trip id="truck4" type="truck_truck" depart="10.00" departLane="best" from="-25379416#15" to="22082638#4"/>
+    <trip id="truck5" type="truck_truck" depart="12.50" departLane="best" from="-164831283" to="-25380037#1"/>
+    <trip id="truck6" type="truck_truck" depart="15.00" departLane="best" from="25079348#1" to="22781483"/>
+    <trip id="truck7" type="truck_truck" depart="17.50" departLane="best" from="-25379416#8" to="23879793"/>
+    <trip id="truck8" type="truck_truck" depart="20.00" departLane="best" from="422419272#9" to="-129387434#1"/>
+    <trip id="truck9" type="truck_truck" depart="22.50" departLane="best" from="-463864074#1" to="-25123770"/>
+    <trip id="truck10" type="truck_truck" depart="25.00" departLane="best" from="555505970#27" to="-48685117#0"/>
+    <trip id="truck11" type="truck_truck" depart="27.50" departLane="best" from="-22662881#0" to="-22662988#1"/>
+    <trip id="truck12" type="truck_truck" depart="30.00" departLane="best" from="454846702#0" to="24770638"/>
+    <trip id="truck13" type="truck_truck" depart="32.50" departLane="best" from="420427016" to="26140152#4"/>
+    <trip id="truck14" type="truck_truck" depart="35.00" departLane="best" from="20906190#1" to="657432022#14"/>
+    <trip id="truck15" type="truck_truck" depart="37.50" departLane="best" departSpeed="max" from="-486731951" to="22781502#2"/>
+    <trip id="truck16" type="truck_truck" depart="40.00" departLane="best" from="452912053#0" to="25079291#0"/>
+    <trip id="truck17" type="truck_truck" depart="42.50" departLane="best" from="462576267#3" to="23876600#1"/>
+    <trip id="truck18" type="truck_truck" depart="45.00" departLane="best" from="25365280#0" to="-191409073#7"/>
+    <trip id="truck19" type="truck_truck" depart="47.50" departLane="best" from="-25380803#1" to="-462560313"/>
+    <trip id="truck20" type="truck_truck" depart="50.00" departLane="best" from="-22566068#3" to="-26529361#0"/>
+    <trip id="truck21" type="truck_truck" depart="52.50" departLane="best" from="-22662980#5" to="-454189810#1"/>
+    <trip id="truck22" type="truck_truck" depart="55.00" departLane="best" from="24771038#2" to="-72654381#0"/>
+    <trip id="truck23" type="truck_truck" depart="57.50" departLane="best" from="-480214787#1" to="-25381802"/>
+    <trip id="truck24" type="truck_truck" depart="60.00" departLane="best" from="-26529361#0" to="52732456#0"/>
+    <trip id="truck25" type="truck_truck" depart="62.50" departLane="best" from="25079308" to="24772388#2"/>
+    <trip id="truck26" type="truck_truck" depart="65.00" departLane="best" departSpeed="max" from="-25101272" to="26140152#0"/>
+    <trip id="truck27" type="truck_truck" depart="67.50" departLane="best" departSpeed="max" from="-25079294#3" to="10763808"/>
+    <trip id="truck28" type="truck_truck" depart="70.00" departLane="best" from="746226870" to="25161883#2"/>
+    <trip id="truck29" type="truck_truck" depart="72.50" departLane="best" from="22662859#0" to="25365414#2"/>
+    <trip id="truck30" type="truck_truck" depart="75.00" departLane="best" from="454271342#0" to="361993052"/>
+    <trip id="truck31" type="truck_truck" depart="77.50" departLane="best" from="-25380803#7" to="-164832339#2"/>
+    <trip id="truck32" type="truck_truck" depart="80.00" departLane="best" from="-453995073#7" to="-424832861#1"/>
+    <trip id="truck33" type="truck_truck" depart="82.50" departLane="best" from="-25364870#0" to="543705221#13"/>
+    <trip id="truck34" type="truck_truck" depart="85.00" departLane="best" from="25123753#3" to="152977939#3"/>
+    <trip id="truck35" type="truck_truck" depart="87.50" departLane="best" departSpeed="max" from="-26187363" to="-361814428#5"/>
+    <trip id="truck36" type="truck_truck" depart="90.00" departLane="best" from="22662881#1" to="-422420305#22"/>
+    <trip id="truck37" type="truck_truck" depart="92.50" departLane="best" from="22781459#0" to="47653090#1"/>
+    <trip id="truck38" type="truck_truck" depart="95.00" departLane="best" from="-555505970#9" to="-26140167#0"/>
+    <trip id="truck39" type="truck_truck" depart="97.50" departLane="best" from="822252084#4" to="22566256"/>
+    <trip id="truck40" type="truck_truck" depart="100.00" departLane="best" departSpeed="max" from="-22781456#2" to="25101270"/>
+    <trip id="truck41" type="truck_truck" depart="102.50" departLane="best" from="367859330" to="164831902#1"/>
+    <trip id="truck42" type="truck_truck" depart="105.00" departLane="best" from="-20572219" to="110479868"/>
+    <trip id="truck43" type="truck_truck" depart="107.50" departLane="best" from="804254972#0" to="22662976#3"/>
+    <trip id="truck45" type="truck_truck" depart="112.50" departLane="best" from="-159034396#2" to="25509323"/>
+    <trip id="truck46" type="truck_truck" depart="115.00" departLane="best" from="25166826#6" to="22781442#3"/>
+    <trip id="truck47" type="truck_truck" depart="117.50" departLane="best" from="-26529361#0" to="25161960"/>
+    <trip id="truck48" type="truck_truck" depart="120.00" departLane="best" from="-22781480" to="165214084#7"/>
+    <trip id="truck49" type="truck_truck" depart="122.50" departLane="best" from="164759175#1" to="555505970#23"/>
+    <trip id="truck51" type="truck_truck" depart="127.50" departLane="best" from="20570487#1" to="-25269892#1"/>
+    <trip id="truck52" type="truck_truck" depart="130.00" departLane="best" departSpeed="max" from="47880906" to="471795205"/>
+    <trip id="truck53" type="truck_truck" depart="132.50" departLane="best" from="-404115894#3" to="25161827#5"/>
+    <trip id="truck54" type="truck_truck" depart="135.00" departLane="best" from="22817406" to="-25123765#1"/>
+    <trip id="truck55" type="truck_truck" depart="137.50" departLane="best" from="26529430#1" to="22781446#2"/>
+    <trip id="truck56" type="truck_truck" depart="140.00" departLane="best" from="361814427#7" to="22662978#6"/>
+    <trip id="truck57" type="truck_truck" depart="142.50" departLane="best" from="-105391525" to="-47653006#0"/>
+    <trip id="truck58" type="truck_truck" depart="145.00" departLane="best" departSpeed="max" from="-164758144#4" to="499060510#6"/>
+    <trip id="truck59" type="truck_truck" depart="147.50" departLane="best" from="469008663#8" to="454271342#1"/>
+    <trip id="truck60" type="truck_truck" depart="150.00" departLane="best" from="-422471666#1.136" to="-20572211#9"/>
+    <trip id="truck61" type="truck_truck" depart="152.50" departLane="best" from="469008663#3" to="545025966#4"/>
+    <trip id="truck62" type="truck_truck" depart="155.00" departLane="best" from="-22566322#7" to="20904868#1"/>
+    <trip id="truck63" type="truck_truck" depart="157.50" departLane="best" from="-20904881#0" to="316470909"/>
+    <trip id="truck64" type="truck_truck" depart="160.00" departLane="best" from="279919419#1" to="-23879760#1"/>
+    <trip id="truck65" type="truck_truck" depart="162.50" departLane="best" from="165214084#0" to="22781498"/>
+    <trip id="truck66" type="truck_truck" depart="165.00" departLane="best" departSpeed="max" from="-26187363" to="473015241#1"/>
+    <trip id="truck67" type="truck_truck" depart="167.50" departLane="best" from="-810729399#0" to="-25509326"/>
+    <trip id="truck68" type="truck_truck" depart="170.00" departLane="best" from="20906637#5" to="26140152#4"/>
+    <trip id="truck69" type="truck_truck" depart="172.50" departLane="best" departSpeed="max" from="-25269542#3" to="-475247365#3"/>
+    <trip id="truck70" type="truck_truck" depart="175.00" departLane="best" from="804254971#4" to="25163215#2"/>
+    <trip id="truck71" type="truck_truck" depart="177.50" departLane="best" from="136601613#1" to="22662865"/>
+    <trip id="truck72" type="truck_truck" depart="180.00" departLane="best" from="-22781599#2" to="-26158861"/>
+    <trip id="truck73" type="truck_truck" depart="182.50" departLane="best" from="-463836596#1" to="23879759"/>
+    <trip id="truck74" type="truck_truck" depart="185.00" departLane="best" from="-25381048#4" to="-26140174#0"/>
+    <trip id="truck75" type="truck_truck" depart="187.50" departLane="best" from="-20906183#0" to="25123753#4"/>
+    <trip id="truck76" type="truck_truck" depart="190.00" departLane="best" from="-25380803#7" to="47971515"/>
+    <trip id="truck77" type="truck_truck" depart="192.50" departLane="best" from="459768280#1" to="-22082638#1"/>
+    <trip id="truck78" type="truck_truck" depart="195.00" departLane="best" departSpeed="max" from="-25381786" to="25269350"/>
+    <trip id="truck79" type="truck_truck" depart="197.50" departLane="best" from="-25378170#0" to="-23987945#4"/>
+    <trip id="truck80" type="truck_truck" depart="200.00" departLane="best" from="499892372#1" to="22790977#5"/>
+    <trip id="truck81" type="truck_truck" depart="202.50" departLane="best" from="165213084#3" to="374861911#2"/>
+    <trip id="truck82" type="truck_truck" depart="205.00" departLane="best" from="422417415" to="-25379416#13"/>
+    <trip id="truck83" type="truck_truck" depart="207.50" departLane="best" from="-22662965#2" to="165213084#2"/>
+    <trip id="truck84" type="truck_truck" depart="210.00" departLane="best" from="-810729399#2" to="20570501#0"/>
+    <trip id="truck85" type="truck_truck" depart="212.50" departLane="best" from="25381480#0" to="25270284#0"/>
+    <trip id="truck86" type="truck_truck" depart="215.00" departLane="best" from="729931128#0" to="-22781441#0"/>
+    <trip id="truck87" type="truck_truck" depart="217.50" departLane="best" from="-561260819#0" to="-499189655#0"/>
+    <trip id="truck88" type="truck_truck" depart="220.00" departLane="best" from="462576267#2" to="-361991757#4"/>
+    <trip id="truck89" type="truck_truck" depart="222.50" departLane="best" from="-25166289#2" to="196119493#0"/>
+    <trip id="truck90" type="truck_truck" depart="225.00" departLane="best" from="-804254971#2" to="-454271342#0"/>
+    <trip id="truck91" type="truck_truck" depart="227.50" departLane="best" from="-26140010#3" to="485320062#0"/>
+    <trip id="truck92" type="truck_truck" depart="230.00" departLane="best" from="152977939#4" to="463864307#1"/>
+    <trip id="truck93" type="truck_truck" depart="232.50" departLane="best" from="22566261#0" to="-199277548#3"/>
+    <trip id="truck94" type="truck_truck" depart="235.00" departLane="best" from="822254269#1" to="454846701#0"/>
+    <trip id="truck95" type="truck_truck" depart="237.50" departLane="best" from="606290697" to="48686036"/>
+    <trip id="truck96" type="truck_truck" depart="240.00" departLane="best" from="173966372#0" to="-25510859#0"/>
+    <trip id="truck97" type="truck_truck" depart="242.50" departLane="best" from="-555505979#0" to="-20572220#2"/>
+    <trip id="truck98" type="truck_truck" depart="245.00" departLane="best" departSpeed="max" from="-486731951" to="729931129#2"/>
+    <trip id="truck100" type="truck_truck" depart="250.00" departLane="best" from="555505970#28" to="804254971#6"/>
+    <trip id="truck101" type="truck_truck" depart="252.50" departLane="best" from="22662855#0" to="25508289"/>
+    <trip id="truck102" type="truck_truck" depart="255.00" departLane="best" from="-24771038#3" to="-463836596#5"/>
+    <trip id="truck103" type="truck_truck" depart="257.50" departLane="best" from="5917924#4" to="23879323"/>
+    <trip id="truck104" type="truck_truck" depart="260.00" departLane="best" from="20906653#4" to="26529052"/>
+    <trip id="truck105" type="truck_truck" depart="262.50" departLane="best" departSpeed="max" from="-199277550" to="23879645"/>
+    <trip id="truck106" type="truck_truck" depart="265.00" departLane="best" from="20570493#2" to="462576267#6"/>
+    <trip id="truck107" type="truck_truck" depart="267.50" departLane="best" from="-22566071#1" to="-25378137#1"/>
+    <trip id="truck108" type="truck_truck" depart="270.00" departLane="best" from="22781811#2" to="25270406"/>
+    <trip id="truck109" type="truck_truck" depart="272.50" departLane="best" from="-25381678#3" to="-23872710#0"/>
+    <trip id="truck110" type="truck_truck" depart="275.00" departLane="best" from="475279655#1" to="-361814428#2"/>
+    <trip id="truck111" type="truck_truck" depart="277.50" departLane="best" departSpeed="max" from="22781808" to="25079294#3"/>
+    <trip id="truck112" type="truck_truck" depart="280.00" departLane="best" from="-756303236" to="23879588#4"/>
+    <trip id="truck113" type="truck_truck" depart="282.50" departLane="best" departSpeed="max" from="20572656" to="526927235#0"/>
+    <trip id="truck114" type="truck_truck" depart="285.00" departLane="best" departSpeed="max" from="-25270305" to="25381796"/>
+    <trip id="truck115" type="truck_truck" depart="287.50" departLane="best" departSpeed="max" from="-25381789" to="152977939#4"/>
+    <trip id="truck116" type="truck_truck" depart="290.00" departLane="best" from="25162965#7" to="-463864306#1"/>
+    <trip id="truck117" type="truck_truck" depart="292.50" departLane="best" departSpeed="max" from="-453995073#8" to="266069593#7"/>
+    <trip id="truck118" type="truck_truck" depart="295.00" departLane="best" from="-20906189#2" to="199365964#0"/>
+    <trip id="truck119" type="truck_truck" depart="297.50" departLane="best" departSpeed="max" from="822254269#0" to="804254972#0"/>
+    <trip id="truck120" type="truck_truck" depart="300.00" departLane="best" from="-20906190#2" to="-25510714#6"/>
+    <trip id="truck122" type="truck_truck" depart="305.00" departLane="best" departSpeed="max" from="47225419" to="475247365#6"/>
+    <trip id="truck123" type="truck_truck" depart="307.50" departLane="best" departSpeed="max" from="-47971515" to="-25161743#5"/>
+    <trip id="truck124" type="truck_truck" depart="310.00" departLane="best" from="453289220#1" to="25380803#1"/>
+    <trip id="truck125" type="truck_truck" depart="312.50" departLane="best" from="23795219" to="729931131#2"/>
+    <trip id="truck126" type="truck_truck" depart="315.00" departLane="best" from="25113353#2" to="-136354445#0"/>
+    <trip id="truck127" type="truck_truck" depart="317.50" departLane="best" from="422990830#0" to="-463864075#0"/>
+    <trip id="truck128" type="truck_truck" depart="320.00" departLane="best" departSpeed="max" from="25161827#0" to="527395825"/>
+    <trip id="truck129" type="truck_truck" depart="322.50" departLane="best" from="-23878009#2" to="-22781820#1"/>
+    <trip id="truck130" type="truck_truck" depart="325.00" departLane="best" departSpeed="max" from="-22781446#2" to="22781599#0"/>
+    <trip id="truck131" type="truck_truck" depart="327.50" departLane="best" from="-316470523#0" to="24771038#3"/>
+    <trip id="truck132" type="truck_truck" depart="330.00" departLane="best" from="25379712" to="-25381063"/>
+    <trip id="truck133" type="truck_truck" depart="332.50" departLane="best" from="23989448#1" to="-422420305#3"/>
+    <trip id="truck134" type="truck_truck" depart="335.00" departLane="best" from="191409073#0" to="47971515"/>
+    <trip id="truck135" type="truck_truck" depart="337.50" departLane="best" from="454839034" to="-22662976#3"/>
+    <trip id="truck136" type="truck_truck" depart="340.00" departLane="best" from="-810729399#2" to="-454008925#0"/>
+    <trip id="truck137" type="truck_truck" depart="342.50" departLane="best" from="-120486714#12" to="361814428#6"/>
+    <trip id="truck138" type="truck_truck" depart="345.00" departLane="best" from="24771993#0" to="-422420305#17"/>
+    <trip id="truck139" type="truck_truck" depart="347.50" departLane="best" from="26116162#0" to="22781502#0"/>
+    <trip id="truck140" type="truck_truck" depart="350.00" departLane="best" from="105391589#1" to="-141020535#1"/>
+    <trip id="truck141" type="truck_truck" depart="352.50" departLane="best" from="-20906642#1" to="47652909"/>
+    <trip id="truck142" type="truck_truck" depart="355.00" departLane="best" departSpeed="max" from="47653006#0" to="22781484"/>
+    <trip id="truck143" type="truck_truck" depart="357.50" departLane="best" from="453503455" to="23879582"/>
+</routes>
