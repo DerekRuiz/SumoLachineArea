@@ -37,6 +37,7 @@ def setOSMFile(filename="lachine_bbox.osm.xml"):
     lachine = ox.graph_from_xml(filename)
     nodes, streets = ox.graph_to_gdfs(lachine)
     streets_gdf = gpd.GeoDataFrame(streets)
+    streets_gdf['osmid'] = streets_gdf['osmid'].astype(str)
     resetStreetDFEmission()
 
 def setNetworkFile(filename="lachine.net.xml"):
@@ -106,7 +107,7 @@ def setStreetEmissionTraci(fromStep, toStep=0):
     if toStep < 0:
         isVehLeft = traci.simulation.getMinExpectedNumber() != 0
         toStep = np.inf
-    elif toStep == 0:
+    elif toStep == 0 or toStep <= fromStep:
         toStep = fromStep + traci.simulation.getDeltaT()
     else:
         isVehLeft = True
@@ -154,10 +155,10 @@ def setStreetEmissionFile(fromStep, toStep=0):
         If = 0 then will perform only 1 step
         If < 0 then will continue until the end of the file
     """
-    if toStep == 0:
+    if toStep < 0:
+        toStep = len(emission_tree_root.findall('.//timestep'))
+    elif toStep == 0 or toStep <= fromStep:
         toStep = fromStep + 1
-    elif toStep < 0:
-        toStep = len(emission_tree_root.findall('.//timestamp'))
 
     resetStreetDFEmission()
 
@@ -168,30 +169,50 @@ def setStreetEmissionFile(fromStep, toStep=0):
             if fuel_output > 0.00:
                 lane = vehicle.attrib["lane"]
                 edge = lane[:-2]
+                edge = edge.split("#")[0]
+                if ':cluster' in edge:
+                    cluster = edge[9:-2].split("_")
+                else:
+                    cluster = [str(abs(int(edge.split("#")[0])))]
 
-                lon, lat = network.convertXY2LonLat(float(vehicle.attrib["x"]), float(vehicle.attrib["y"]))
-                vehicle_point = Point(lon, lat)
+                for edge in cluster:
+                    lon, lat = network.convertXY2LonLat(float(vehicle.attrib["x"]), float(vehicle.attrib["y"]))
+                    vehicle_point = Point(lon, lat)
 
-                CO2_output = float(vehicle.attrib["CO2"])
-                CO_output = float(vehicle.attrib["CO"])
-                HC_output = float(vehicle.attrib["HC"])
-                NOx_output = float(vehicle.attrib["NOx"])
-                PMx_output = float(vehicle.attrib["PMx"])
+                    CO2_output = float(vehicle.attrib["CO2"])
+                    CO_output = float(vehicle.attrib["CO"])
+                    HC_output = float(vehicle.attrib["HC"])
+                    NOx_output = float(vehicle.attrib["NOx"])
+                    PMx_output = float(vehicle.attrib["PMx"])
 
-                # Determine street in dataframe from closest position
-                addOutputs(vehicle_point, edge, fuel_output, CO2_output, CO_output, HC_output, NOx_output, PMx_output)
+                    # Determine street in dataframe from closest position
+                    addOutputs(vehicle_point, edge, fuel_output, CO2_output, CO_output, HC_output, NOx_output, PMx_output)
 
 def addOutputs(vehicle_point, edge, fuel_output=0, CO2_output=0, CO_output=0, HC_output=0, NOx_output=0, PMx_output=0):
     global streets_gdf
-    for index, row in streets_gdf.iterrows():
+
+    # Gets all indices where the OSM ID == edge ID
+    rowIndices = streets_gdf.index[streets_gdf.loc[:,'osmid'].str.match(edge)]
+
+    for index in rowIndices:
+        streets_gdf.loc[index,'fuel'] += fuel_output
+        streets_gdf.loc[index,'CO2'] += CO2_output
+        streets_gdf.loc[index,'CO'] += CO_output
+        streets_gdf.loc[index,'HC'] += HC_output
+        streets_gdf.loc[index,'NOx'] += NOx_output
+        streets_gdf.loc[index,'PMx'] += PMx_output
+
+
+    """for index, row in streets_gdf.iterrows():
                     street_line = row.geometry
+                    
                     if (str(row.osmid) in edge): #(street_line.distance(vehicle_point) < 1e-4) and 
                         streets_gdf.loc[index,'fuel'] += fuel_output
                         streets_gdf.loc[index,'CO2'] += CO2_output
                         streets_gdf.loc[index,'CO'] += CO_output
                         streets_gdf.loc[index,'HC'] += HC_output
                         streets_gdf.loc[index,'NOx'] += NOx_output
-                        streets_gdf.loc[index,'PMx'] += PMx_output
+                        streets_gdf.loc[index,'PMx'] += PMx_output"""
 
 def closeTraCI():
     try:
@@ -205,11 +226,11 @@ def closeTraCI():
 setOSMFile()
 setNetworkFile()
 
-user_output = input('Do you wish to use the traceEmission output file?\nIf you select "no" then a simulation will run emission will be generated. (y/n): ')
+user_output = input('Do you wish to use the traceEmission output file?\nIf you select "no" then a simulation will run and emissions will be generated. (y/n): ')
 
 if('y' in user_output):
     setEmissionFile()
-    setStreetEmissionFile(1,10)
+    setStreetEmissionFile(1,-1)
 else:
     setStreetEmissionTraci(1,10)
 
