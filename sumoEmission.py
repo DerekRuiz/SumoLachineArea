@@ -129,7 +129,7 @@ def setStreetsDFTraci(fromStep, toStep=0, toEnd=False, duration=1, useDuration=F
     if saveFigures:
         if not os.path.exists(directory):
             raise Exception('Directory "' + str(os.path.abspath(directory)) + '" does not exist.')
-        elif os.path.isdir(directory):
+        elif not os.path.isdir(directory):
             raise Exception('Directory "' + str(os.path.abspath(directory)) + '" is not a directory.')
 
     try:
