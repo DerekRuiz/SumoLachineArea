@@ -443,10 +443,6 @@ def saveStepFigures(directory="Images", fromStep=1, toStep=0, duration=1, useDur
         else will create a simulation and run it.
     """
     if useFile:
-        setStreetEmissionFile(fromStep=fromStep, toStep=toStep, duration=duration, useDuration=useDuration, toEnd=toEnd, saveFigures=True, directory=directory)
+        setStreetsDFFile(fromStep=fromStep, toStep=toStep, duration=duration, useDuration=useDuration, toEnd=toEnd, saveFigures=True, directory=directory)
     else:
-        setStreetEmissionTraci(fromStep=fromStep, toStep=toStep, duration=duration, useDuration=useDuration, toEnd=toEnd, saveFigures=True, directory=directory)
-
-def close():
-    plt.clf()
-    plt.close()
+        setStreetsDFTraci(fromStep=fromStep, toStep=toStep, duration=duration, useDuration=useDuration, toEnd=toEnd, saveFigures=True, directory=directory)
