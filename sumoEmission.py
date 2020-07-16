@@ -9,6 +9,7 @@ import osmnx as ox
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 import os, sys
+import gc
 
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -95,7 +96,7 @@ def resetStreetDFEmission():
     streets_gdf['NOx'] = 0
     streets_gdf['PMx'] = 0
 
-def setStreetEmissionTraci(fromStep, toStep=0, toEnd=False, duration=1, useDuration=False, saveFigures=False, directory="Images"):
+def setStreetsDFTraci(fromStep, toStep=0, toEnd=False, duration=1, useDuration=False, saveFigures=False, directory="Images"):
     """
     Sets the emissions of the streets GeoDataFrame using TraCI to create a simulation.
     The simulation steps start at fromStep and end at toStep (not included)
@@ -125,7 +126,7 @@ def setStreetEmissionTraci(fromStep, toStep=0, toEnd=False, duration=1, useDurat
     directory : string
         Directory where the emission images will be saved.
     """
-    if saveFigure:
+    if saveFigures:
         if not os.path.exists(directory):
             raise Exception('Directory "' + str(os.path.abspath(directory)) + '" does not exist.')
         elif os.path.isdir(directory):
@@ -187,23 +188,23 @@ def setStreetEmissionTraci(fromStep, toStep=0, toEnd=False, duration=1, useDurat
                         # Determine street in dataframe from closest position
                         addOutputs(edge, fuel_output, CO2_output, CO_output, HC_output, NOx_output, PMx_output)
         
-        if saveFigure:
+        if saveFigures:
             createFigure(all=False, fuel=True)
-            saveFigure(directory + "/Fuel/fuel" + str(traci.simulation.getTime()))
+            saveFigure(directory + "/Fuel/fuel_" + str(traci.simulation.getTime()))
             createFigure(all=False, CO2=True)
-            saveFigure(directory + "/CO2/co2" + str(traci.simulation.getTime()))
+            saveFigure(directory + "/CO2/co2_" + str(traci.simulation.getTime()))
             createFigure(all=False, CO=True)
-            saveFigure(directory + "/CO/co" + str(traci.simulation.getTime()))
+            saveFigure(directory + "/CO/co_" + str(traci.simulation.getTime()))
             createFigure(all=False, HC=True)
-            saveFigure(directory + "/HC/hc" + str(traci.simulation.getTime()))
+            saveFigure(directory + "/HC/hc_" + str(traci.simulation.getTime()))
             createFigure(all=False, NOx=True)
-            saveFigure(directory + "/NOx/nox" + str(traci.simulation.getTime()))
+            saveFigure(directory + "/NOx/nox_" + str(traci.simulation.getTime()))
             createFigure(all=False, PMx=True)
-            saveFigure(directory + "/PMx/pmx" + str(traci.simulation.getTime()))
+            saveFigure(directory + "/PMx/pmx_" + str(traci.simulation.getTime()))
 
         traci.simulationStep()
 
-def setStreetEmissionFile(fromStep, toStep=0, duration=1, useDuration=False, toEnd=False, saveFigures=False, directory="Images"):
+def setStreetsDFFile(fromStep, toStep=0, duration=1, useDuration=False, toEnd=False, saveFigures=False, directory="Images"):
     """
     Sets the accumulated emissions of the streets GeoDataFrame using the traceEmission file to create a simulation.
     The file parses steps starting at fromStep and ending at toStep (not included)
@@ -233,7 +234,7 @@ def setStreetEmissionFile(fromStep, toStep=0, duration=1, useDuration=False, toE
     directory : string
         Directory where the emission images will be saved.
     """
-    if saveFigure:
+    if saveFigures:
         if not os.path.exists(directory):
             raise Exception('Directory "' + str(os.path.abspath(directory)) + '" does not exist.')
         elif not os.path.isdir(directory):
@@ -293,19 +294,19 @@ def setStreetEmissionFile(fromStep, toStep=0, duration=1, useDuration=False, toE
                 for edge in cluster:
                     # Determine street in dataframe from closest position
                     addOutputs(edge, fuel_output, CO2_output, CO_output, HC_output, NOx_output, PMx_output)
-        if saveFigure:
+        if saveFigures:
             createFigure(all=False, fuel=True)
-            saveFigure(directory + "/Fuel/fuel" + str(step))
+            saveFigure(directory + "/Fuel/fuel_" + str(step))
             createFigure(all=False, CO2=True)
-            saveFigure(directory + "/CO2/co2" + str(step))
+            saveFigure(directory + "/CO2/co2_" + str(step))
             createFigure(all=False, CO=True)
-            saveFigure(directory + "/CO/co" + str(step))
+            saveFigure(directory + "/CO/co_" + str(step))
             createFigure(all=False, HC=True)
-            saveFigure(directory + "/HC/hc" + str(step))
+            saveFigure(directory + "/HC/hc_" + str(step))
             createFigure(all=False, NOx=True)
-            saveFigure(directory + "/NOx/nox" + str(step))
+            saveFigure(directory + "/NOx/nox_" + str(step))
             createFigure(all=False, PMx=True)
-            saveFigure(directory + "/PMx/pmx" + str(step))
+            saveFigure(directory + "/PMx/pmx_" + str(step))
 
 def addOutputs(edge, fuel_output=0, CO2_output=0, CO_output=0, HC_output=0, NOx_output=0, PMx_output=0):
     checkStreetsDF()
@@ -361,7 +362,11 @@ def createFigure(all=True, fuel=False, CO2=False, CO=False, HC=False, NOx=False,
     w = math.ceil(len(emissions) / l)
 
     coords = [(x, y) for x in range(l) for y in range(w)]
-
+    plt.cla()
+    plt.clf()
+    plt.close("all")
+    gc.collect()
+    
     fig, axs = plt.subplots(l, w)
     for ax, col in zip(coords, emissions):
         if l == 1 and w == 1:
@@ -435,9 +440,13 @@ def saveStepFigures(directory="Images", fromStep=1, toStep=0, duration=1, useDur
 
     useFile : bool
         If true then will use the emission file,
-        else will use create a simulation and run it.
+        else will create a simulation and run it.
     """
     if useFile:
         setStreetEmissionFile(fromStep=fromStep, toStep=toStep, duration=duration, useDuration=useDuration, toEnd=toEnd, saveFigures=True, directory=directory)
     else:
         setStreetEmissionTraci(fromStep=fromStep, toStep=toStep, duration=duration, useDuration=useDuration, toEnd=toEnd, saveFigures=True, directory=directory)
+
+def close():
+    plt.clf()
+    plt.close()
