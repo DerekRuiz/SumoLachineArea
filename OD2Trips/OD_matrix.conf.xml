@@ -1,0 +1,7 @@
+<configuration>
+    <input>
+        <taz-files value="taz_edges.taz.xml"/>
+        <od-matrix-files value="OD_Matrices/OD_matrix_7_8.od,OD_Matrices/OD_matrix_8_9.od,OD_Matrices/OD_matrix_9_10.od,OD_Matrices/OD_matrix_10_11.od,OD_Matrices/OD_matrix_11_12.od,
+            OD_Matrices/OD_matrix_12_13.od,OD_Matrices/OD_matrix_13_14.od,OD_Matrices/OD_matrix_14_15.od"/>
+    </input>
+</configuration>
