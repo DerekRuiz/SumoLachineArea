@@ -2,14 +2,13 @@ from  EmissionTools import sumoEmission as se, emissionIO as eio
 import geopandas
 
 
-se.validateEtype(['Fuel','CO','FD'])
 
-se.setEmissionFile()
-se.createStreetsDF()
+#se.setEmissionFile()
+#se.createStreetsDF()
 
-se.collectEmissions("DaStreets",['Fuel','CO2'],10,20,timeInterval=6)
+#se.collectEmissions("Emissions/Lachine_Emission",['Fuel','NOx'],10,80,timeInterval=5)
 
-df = eio.loadDataFrame('DaStreets_Fuel')
+df = eio.loadDataFrame('Emissions/Lachine_Emission_Fuel')
 print(df.head())
 
 se.closeTraCI()

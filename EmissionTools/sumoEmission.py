@@ -1,7 +1,8 @@
-import EmissionTools.emissionIO as eio
-import os, sys
+from EmissionTools import emissionIO as eio
+import os
+import sys
 import numpy as np
-import xml.etree.ElementTree as ET
+from xml.etree import ElementTree as ET
 import sumolib
 import traci
 import osmnx as ox
@@ -232,8 +233,8 @@ def collectEmissionsFromFile(filepath, eTypes, fromStep, toStep=-1, timeInterval
                     else:
                         edge = edge.split("_")[0]
                         edge = edge.split("#")[0]
-                        cluster = [str(abs(int(edge)))]
-
+                        cluster = [edge.replace("-","")]
+                        
                     for edge in cluster:
                         # Determine street in dataframe from closest position
                         addOutputs(edge, emission_output)
@@ -342,7 +343,7 @@ def collectEmissionsFromTraCI(filepath, eTypes, fromStep, toStep=-1, timeInterva
                         else:
                             edgeID = edgeID.split("_")[0]
                             edgeID = edgeID.split("#")[0]
-                            cluster = [str(abs(int(edgeID)))]
+                            cluster = [edgeID.replace("-","")]
 
                         for edge in cluster:
                             # Determine street in dataframe from closest position
@@ -360,15 +361,48 @@ def closeTraCI():
         pass
 
 
-def collectEmissions(filepath, eTypes, fromStep, toStep=0, duration=1, useDuration=False, timeInterval=0, toEnd=False, useFile=True):
+def collectEmissions(filepath, eTypes, fromStep, toStep=-1, timeInterval=0, useDuration=False, duration=1, toEnd=False, useFile=True):
     """
     Wrapper method that allows for easy selection of method and ensures final code is excecuted.
+
+    Gathers emission data from the emission file and saves the output as a GeoPackage file
+    The file parses steps starting at fromStep and ending at toStep (not included),
+    unless useDuration is True, in which case it uses duration
+    
+    Parameters
+    ----------
+    filepath : string
+        File path where the geoDataFrame will be saved.
+    
+    eTypes : List
+        List of string containing the emission types that will be collected.
+
+    fromStep : int
+        Initial step to start file parsing at
+
+    toStep : int
+        The time step that the file parsing will stop at.
+        If < 0 then will perform only 1 step
+
+    timeInterval : int
+        The number of steps in an interval. Measured in seconds.
+        If = 0 then will have a time interval equal to the total run time of the simulation
+
+    useDuration : bool
+        Toggles to use the duration instead of the step number.
+
+    duration : int
+        The amount of unit time (default 1 sec) that the file will stop at.
+        This will only be used if useDuration is True
+
+    toEnd : bool
+        If True then will continue until the end of the file and will ignore toStep and duration
     """
     try:
         if useFile:
-            collectEmissionsFromFile(filepath, eTypes, fromStep, toStep, duration, useDuration, timeInterval, toEnd)
+            collectEmissionsFromFile(filepath=filepath, eTypes=eTypes, fromStep=fromStep, toStep=toStep, timeInterval=timeInterval, useDuration=useDuration, duration=duration, toEnd=toEnd)
         else:
-            collectEmissionsFromTraCI(filepath, eTypes, fromStep, toStep, duration, useDuration, timeInterval, toEnd)
+            collectEmissionsFromTraCI(filepath=filepath, eTypes=eTypes, fromStep=fromStep, toStep=toStep, timeInterval=timeInterval, useDuration=useDuration, duration=duration, toEnd=toEnd)
     except:
         raise
     finally:
