@@ -46,6 +46,18 @@ HOW TO GENERATE TRIPS FROM Origin Destination Matrix
             -o: The output trip file, use extention .odtrips.xml to differentiate from other trip files
             --vtype: The type of vehicle that will travel the trip
             --prefix: The prefix string for the trip ID, used so different trip files have unique trip IDs
+        
+    - Assign vehicle class to vehicle ID:
+        - After the trip files are created, assign the vtype attribute to a SUMO vehicle class
+        - A new tag of vType must be created and have the attributes "id" and "vClass"
+        - Attribute "id" is the vtype assigned when creating the trip file
+        - Attribute "vClass" is the class interpreted by SUMO to generate the vehicles
+    ex:
+        <routes>
+            <vType id="veh_passenger" vClass="passenger" />
+            <trip id="tripID_0" type="veh_passenger" ... />
+            ... (More vehicle trips) ...
+        </routes>
 
     - Update the sumocfg file to use SUMO-GUI:
         - In the .sumocfg file the input element, routes-files must be updated to use the new trips
