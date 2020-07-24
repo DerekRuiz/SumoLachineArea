@@ -1,17 +1,15 @@
-import sumoEmission as se
+from  EmissionTools import sumoEmission as se, emissionIO as eio
+import geopandas
+
+
+se.validateEtype(['Fuel','CO','FD'])
 
 se.setEmissionFile()
 se.createStreetsDF()
 
-se.setStreetsDFFile(1,toStep=4)
+se.collectEmissions("DaStreets",['Fuel','CO2'],10,20,timeInterval=6)
 
-se.createFigure(all=True)
-se.showFigure()
-
-se.createFigure(all=False, fuel=True, NOx=True)
-se.showFigure()
-se.saveFigure("test")
-
-se.saveStepFigures(fromStep=1, useDuration=True, duration=5, useFile=False)
+df = eio.loadDataFrame('DaStreets_Fuel')
+print(df.head())
 
 se.closeTraCI()
