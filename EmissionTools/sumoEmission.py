@@ -120,10 +120,7 @@ def saveDataFrame(fromStep, toStep, timeInterval, filename, eTypes):
             hr = step // 3600
             mins = (step % 3600) // 60
             sec = (step % 3600) % 60
-            if sec != 0:
-                fromTime = str(hr) + ":" + str(mins) + "." + str(sec)
-            else:
-                fromTime = str(hr) + ":" + str(mins)
+            fromTime = ("%i:%.2i.%.2i" % (hr,mins,sec))
             
             nextStep = step + timeInterval
             if nextStep >= toStep:
@@ -131,14 +128,11 @@ def saveDataFrame(fromStep, toStep, timeInterval, filename, eTypes):
             hr = nextStep // 3600
             mins = (nextStep % 3600) // 60
             sec = (nextStep % 3600) % 60
-            if sec != 0:
-                toTime = str(hr) + ":" + str(mins) + "." + str(sec)
-            else:
-                toTime = str(hr) + ":" + str(mins)
+            toTime = ("%i:%.2i.%.2i" % (hr,mins,sec))
             
             #addstep
             dataFrame = dataFrame.join(pd.DataFrame(stepArr))
-            dataFrame = dataFrame.rename({0:'step_' + fromTime + "-" + toTime}, axis=1)
+            dataFrame = dataFrame.rename({0: fromTime + "-" + toTime}, axis=1)
 
         eio.saveDataFrame(dataFrame, filename + '_' + eType)
         
