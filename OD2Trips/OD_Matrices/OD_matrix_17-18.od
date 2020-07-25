@@ -1,6 +1,6 @@
 $OR;D2
 * From-Time  To-Time
-10.00 11.00
+17.00 18.00
 * Factor
 1.00
 * some
@@ -8,5 +8,5 @@ $OR;D2
 * comments
 * (10 characters left aligned) + 1 space
 * 	from 	   to	  num of vehicles
-     taz_0      taz_1       75.00
-     taz_1      taz_0       25.00
+     taz_0      taz_1       1.00
+     taz_1      taz_0       99.00
