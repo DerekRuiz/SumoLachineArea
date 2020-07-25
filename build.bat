@@ -1,4 +1,4 @@
-ECHO OFF
+@ECHO OFF
 
 rem information at: "https://sumo.dlr.de/docs/Tools/Trip.html"
 rem -p: the frequency of trips in a second. ex -p 0.5 => a trip is added every 0.5 seconds
@@ -7,7 +7,7 @@ rem -e: the end time that the last trip arrives
 rem --seed: an initial seed for psuedo randomness
 rem --fringe-factor: the probability that a trip starts at an edge with no successor or predecessor
 
-ECHO ON
+@ECHO ON
 
 python "%SUMO_HOME%tools\randomTrips.py" -n lachine.net.xml --seed 42 --fringe-factor 1 -p 1 -o Trips/tripLachine.pedestrian.trips.xml -e 360 -r Trips\tripLachine.pedestrian.rou.xml --vehicle-class pedestrian --pedestrians --prefix ped --max-distance 2000
 python "%SUMO_HOME%tools\randomTrips.py" -n lachine.net.xml --seed 42 --fringe-factor 2 -p 1 -o Trips/tripLachine.bicycle.trips.xml -e 360 --vehicle-class bicycle --vclass bicycle --prefix bike --fringe-start-attributes "departSpeed=\"max\"" --max-distance 8000 --trip-attributes "departLane=\"best\"" --validate

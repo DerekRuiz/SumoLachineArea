@@ -1,7 +1,6 @@
 <configuration>
     <input>
-        <taz-files value="taz_edges.taz.xml"/>
-        <od-matrix-files value="OD_Matrices/OD_matrix_7_8.od,OD_Matrices/OD_matrix_8_9.od,OD_Matrices/OD_matrix_9_10.od,OD_Matrices/OD_matrix_10_11.od,OD_Matrices/OD_matrix_11_12.od,
-            OD_Matrices/OD_matrix_12_13.od,OD_Matrices/OD_matrix_13_14.od,OD_Matrices/OD_matrix_14_15.od"/>
+        <taz-files value="taz_edges.taz.xml" />
+        <od-matrix-files value="OD_Matrices/OD_matrix_10-11.od,OD_Matrices/OD_matrix_11-12.od,OD_Matrices/OD_matrix_12-13.od,OD_Matrices/OD_matrix_13-14.od,OD_Matrices/OD_matrix_14-15.od,OD_Matrices/OD_matrix_15-16.od,OD_Matrices/OD_matrix_16-17.od,OD_Matrices/OD_matrix_17-18.od,OD_Matrices/OD_matrix_6-7.od,OD_Matrices/OD_matrix_7-8.od,OD_Matrices/OD_matrix_8-9.od,OD_Matrices/OD_matrix_9-10.od" />
     </input>
 </configuration>
