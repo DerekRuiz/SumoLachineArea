@@ -7,7 +7,7 @@
 
     <input>
         <net-file value="lachine.net.xml"/>
-        <route-files value="OD2Trips/ODTrips/OD_matrix.passenger.odtrips.xml,OD2Trips/ODTrips/OD_matrix.motorcycle.odtrips.xml,OD2Trips/ODTrips/OD_matrix.bus.odtrips.xml"/>
+        <route-files value="OD2Trips/ODTrips/OD_matrix.passenger.odtrips.xml,OD2Trips/ODTrips/OD_matrix.motorcycle.odtrips.xml,OD2Trips/ODTrips/OD_matrix.bus.odtrips.xml,OD2Trips/ODTrips/OD_matrix.truck.odtrips.xml"/>
         <additional-files value="lachine.poly.xml"/>
     </input>
 
