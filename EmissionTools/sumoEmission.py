@@ -1,5 +1,5 @@
 from EmissionTools import emissionIO as eio
-import os
+from os import path
 import sys
 import numpy as np
 from xml.etree import ElementTree as ET
@@ -8,12 +8,7 @@ import traci
 import osmnx as ox
 import geopandas as gpd
 import pandas as pd
-
-if 'SUMO_HOME' in os.environ:
-    tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
-    sys.path.append(tools)
-else:   
-    sys.exit("Please declare environment variable 'SUMO_HOME'")
+import warnings
 
 ## Global ##
 
@@ -26,32 +21,61 @@ def validateEtype(eTypes):
         except KeyError:
             raise Exception('Emission type of "' + str(eType) + '" is not a valid emission')
 
-def checkStreetsDF():
-    global streets_gdf
-    if not "streets_gdf" in globals():
-        raise Exception("OSM file was not initialized")
+def checkSumocfgFile():
+    global sumocfgFile
+    if not "sumocfgFile" in globals():
+        raise Exception("SUMO configuration file was not initialized")
 
 def checkEmissionFile():
     global emission_tree_root
     if not "emission_tree_root" in globals():
         raise Exception("Emission file was not initialized")
 
-def setEmissionFile(filepath="Outputs/traceEmission.xml"):
+def checkStreetsDF():
+    global streets_gdf
+    if not "streets_gdf" in globals():
+        raise Exception("OSM file was not initialized")
+
+def setSumocfgFile(filepath):
+    """
+    Set the SUMO configuration file.
+    """
+    if not path.exists(filepath):
+        raise Exception('SUMO configuration file at "' + str(path.abspath(filepath)) + '" does not exist')
+    global sumocfgFile
+    sumocfgFile = filepath
+
+def setEmissionFile(filepath):
     """
     Set the emission output file.
+    If the file is too large then the file is split into smaller files
     """
-    if not os.path.exists(filepath):
-        raise Exception('Emission file at "' + str(os.path.abspath(filepath)) + '" does not exist')
+    if not path.exists(filepath):
+        raise Exception('Emission file at "' + str(path.abspath(filepath)) + '" does not exist')
     global emission_tree_root
-    emission_tree = ET.parse(filepath)
-    emission_tree_root = emission_tree.getroot()
+    global emission_file_path
+    global has_split
+    emission_file_path = filepath
 
-def createStreetsDF(filepath="lachine_bbox.osm.xml"):
+    if eio.validateEmissionFileSize(emission_file_path):
+        has_split = False
+        emission_tree = ET.parse(emission_file_path)
+        emission_tree_root = emission_tree.getroot()
+    else:
+        warnings.warn("Emission file is too large to parse, will split into smaller files first")
+        newfile = eio.splitEmissionFile(emission_file_path)
+        
+        has_split = True
+        emission_tree = ET.parse(newfile)
+        emission_tree_root = emission_tree.getroot()
+    
+
+def createStreetsDF(filepath):
     """
     Creates and initializes the streets GeoDataFrame using the OSM file.
     """
-    if not os.path.exists(filepath):
-        raise Exception('OSM file at "' + str(os.path.abspath(filepath)) + '" does not exist')
+    if not path.exists(filepath):
+        raise Exception('OSM file at "' + str(path.abspath(filepath)) + '" does not exist')
     global streets_gdf
     lachine = ox.graph_from_xml(filepath)
     gdfs = ox.graph_to_gdfs(lachine)
@@ -112,7 +136,8 @@ def saveNumpyArrays(eTypes, index):
 def saveDataFrame(fromStep, toStep, timeInterval, filename, eTypes):
     dataFrame = getStreetDF().copy()
     if '.gpkg' in filename:
-        filename = os.path.splitext(filename)
+        filename = path.splitext(filename)[0]
+        
     for eType in eTypes:
         for step in range(fromStep, toStep, timeInterval):
             stepArr = eio.loadNumpyArray(eType + "_" + str(step))
@@ -135,9 +160,59 @@ def saveDataFrame(fromStep, toStep, timeInterval, filename, eTypes):
             dataFrame = dataFrame.rename({0: fromTime + "-" + toTime}, axis=1)
 
         eio.saveDataFrame(dataFrame, filename + '_' + eType)
+
+def setNextEmissionFile(filepath, index):
+    global emission_tree_root
+    newfile = eio.getNextEmissionFile(filepath, index)
+
+    emission_tree = ET.parse(newfile)
+    emission_tree_root = emission_tree.getroot()
+
+def getNextStepRoot(step):
+    global emission_file_path
+    global emission_file_index
+    global has_split
+
+    while True:
+        step_root = emission_tree_root.find('.//timestep[@time="%i.00"]' % (step))
+        if not step_root is None:
+            return step_root
+        elif not has_split:
+            return step_root
+        
+        # Try to get next emission file
+        try:
+            emission_file_index += 1
+            setNextEmissionFile(emission_file_path, emission_file_index)
+        except OSError:
+            return None
         
 
-def collectEmissionsFromFile(filepath, eTypes, fromStep, toStep=-1, timeInterval=0, useDuration=False, duration=1, toEnd=False):
+    # There is another emission file
+    step_root = emission_tree_root.find('.//timestep[@time="%i.00"]' % (step))
+    return step_root
+
+def getLastEmissionTime():
+    global emission_file_path
+    global emission_tree_root
+    if has_split:
+        last_file = eio.getLastEmissionFile(emission_file_path)
+        root = ET.parse(last_file).getroot()
+    else:
+        root = emission_tree_root
+    return int(float(root.find('.//timestep[last()]').attrib['time']))
+
+def getFirstEmissionTime():
+    global emission_file_path
+    global emission_tree_root
+    if has_split:
+        first_file = eio.getFirstEmissionFile(emission_file_path)
+        root = ET.parse(first_file).getroot()
+    else:
+        root = emission_tree_root
+    return int(float(root.find('.//timestep[1]').attrib['time']))
+
+def collectEmissionsFromFile(filepath, eTypes, fromStep=-1, toStep=-1, timeInterval=0, useDuration=False, duration=1, toEnd=False):
     """
     Gathers emission data from the emission file and saves the output as a GeoPackage file
     The file parses steps starting at fromStep and ending at toStep (not included),
@@ -172,15 +247,17 @@ def collectEmissionsFromFile(filepath, eTypes, fromStep, toStep=-1, timeInterval
     toEnd : bool
         If True then will continue until the end of the file and will ignore toStep and duration
     """
-    global emission_tree_root
+    global emission_file_index
+
     checkEmissionFile()
     validateEtype(eTypes)
+    emission_file_index = -1
 
     if fromStep < 0:
-        raise Exception("Cannot start from a negative time")
+        fromStep = getFirstEmissionTime()
 
     if toEnd:
-        toStep = len(emission_tree_root.findall('.//timestep'))
+        toStep = getLastEmissionTime()
     elif useDuration:
         toStep = fromStep + duration
     
@@ -199,15 +276,16 @@ def collectEmissionsFromFile(filepath, eTypes, fromStep, toStep=-1, timeInterval
         for step_interval in range(timeInterval):
             if step + step_interval >= toStep:
                 break
+            
+            step_root = getNextStepRoot(step + step_interval)
 
-            step_root = emission_tree_root.find('.//timestep[@time="%i.00"]' % (step + step_interval))
             if step_root is None:
                 hr = (step + step_interval) // 3600
                 mins = ((step + step_interval) % 3600) // 60
-                sec = ((step + step_interval) % 3600) % 60
-                raise Exception("Time of %i:%i.%i was not generated in the emission file" % (hr, mins, sec))
+                sec = int(((step + step_interval) % 3600) % 60)
+                raise Exception("Time of %i:%.2i.%.2i was not generated in the emission file" % (hr, mins, sec))
 
-            for vehicle in step_root.findall('.//vehicle'):
+            for vehicle in step_root.findall('//vehicle'):
                 fuel_output = float(vehicle.attrib["fuel"])
 
                 if fuel_output > 0.00:
@@ -236,7 +314,6 @@ def collectEmissionsFromFile(filepath, eTypes, fromStep, toStep=-1, timeInterval
         saveNumpyArrays(eTypes, step)
     
     saveDataFrame(fromStep, toStep, timeInterval, filepath, eTypes)
-    eio.removeProjectTempFolder()
 
 
 
@@ -274,17 +351,20 @@ def collectEmissionsFromTraCI(filepath, eTypes, fromStep, toStep=-1, timeInterva
     toEnd : bool
         If True then will continue until no more vehicles in the simulation and will ignore toStep
     """
-    validateEtype(eTypes)
+    global sumocfgFile
 
+    validateEtype(eTypes)
+    checkSumocfgFile()
+    
     sumob = sumolib.checkBinary('sumo')
     try:
         traci.getConnection()
     except traci.TraCIException:
-        traci.start([sumob, '-c','lachine.sumocfg'])
+        traci.start([sumob, '-c', sumocfgFile])
 
     if traci.simulation.getTime() > fromStep:
         traci.close()
-        traci.start([sumob, '-c','lachine.sumocfg'])
+        traci.start([sumob, '-c', sumocfgFile])
 
     if fromStep < 0:
         raise Exception("Cannot start from a negative time")
@@ -292,12 +372,12 @@ def collectEmissionsFromTraCI(filepath, eTypes, fromStep, toStep=-1, timeInterva
     if toEnd:
         toStep = np.inf
     elif useDuration:
-        toStep = fromStep + (traci.simulation.getDeltaT() * duration)
+        toStep = fromStep + int(traci.simulation.getDeltaT() * duration)
     
     if toStep >= 0 and toStep <= fromStep:
         raise Exception("Ending time cannot be smaller than start time")
     if toStep < 0:
-        toStep = fromStep + traci.simulation.getDeltaT()
+        toStep = fromStep + int(traci.simulation.getDeltaT())
     
     if timeInterval <= 0 or timeInterval > toStep - fromStep:
         timeInterval = toStep - fromStep
@@ -344,7 +424,10 @@ def collectEmissionsFromTraCI(filepath, eTypes, fromStep, toStep=-1, timeInterva
                             addOutputs(edge, emission_output)            
             traci.simulationStep()
 
-        saveNumpyArrays(eTypes, traci.simulation.getTime())
+        saveNumpyArrays(eTypes, int(traci.simulation.getTime()))
+
+    if toStep == np.inf:
+        toStep = int(traci.simulation.getTime() + traci.simulation.getDeltaT())
 
     saveDataFrame(fromStep, toStep, timeInterval, filepath, eTypes)
 
@@ -391,6 +474,9 @@ def collectEmissions(filepath, eTypes, fromStep, toStep=-1, timeInterval=0, useD
 
     toEnd : bool
         If True then will continue until the end of the file and will ignore toStep and duration
+
+    useFile : bool
+        If True then will use the emission file, otherwise will create a simulation using TraCI
     """
     try:
         if useFile:

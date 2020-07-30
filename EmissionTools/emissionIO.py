@@ -3,7 +3,8 @@ import os
 import numpy as np
 import shutil
 
-_TEMP_FOLDER = "temp/"
+_TEMP_FOLDER = "temp"
+_EMISION_FOLDER = "splitEmission"
 
 def saveDataFrame(dataFrame, filepath):
     """
@@ -58,14 +59,66 @@ def getFilesInTemp(prefix=None):
 def saveNumpyArray(npArray, filename):
     createProjectTempFolder()
     
-    np.save(_TEMP_FOLDER + filename, npArray)
+    np.save(os.path.join(_TEMP_FOLDER, filename), npArray)
 
 def loadNumpyArray(filename):
     if not os.path.exists(_TEMP_FOLDER):
         raise OSError("No numpy arrays created yet")
-    elif not os.path.exists(_TEMP_FOLDER + filename):
+    elif not os.path.exists(os.path.join(_TEMP_FOLDER, filename)):
         filename += ".npy"
-    if not os.path.exists(_TEMP_FOLDER + filename):
-        raise OSError('Numpy file "' + os.path.abspath(_TEMP_FOLDER + filename) + '" does not exists')
+    if not os.path.exists(os.path.join(_TEMP_FOLDER, filename)):
+        raise OSError('Numpy file "' + os.path.abspath(os.path.join(_TEMP_FOLDER, filename)) + '" does not exists')
     
-    return np.load(_TEMP_FOLDER + filename)
+    return np.load(os.path.join(_TEMP_FOLDER, filename))
+
+def createEmissionFolder():
+    if not os.path.exists(_EMISION_FOLDER):
+        os.makedirs(_EMISION_FOLDER)
+
+def splitEmissionFile(filepath):
+    createEmissionFolder()
+    filename = os.path.splitext(os.path.basename(filepath))[0]
+    index = 0
+    try:
+        f = open(filepath, "r")
+        nf = open(os.path.join(_EMISION_FOLDER, filename + "_" + str(index) + ".xml"), "w")
+        nf_path = os.path.abspath(nf.name)
+        line = f.readline()
+        while line:
+            nf.write(line)
+            if os.path.getsize(os.path.abspath(nf.name)) > (2**27) and "</timestep>" in line:
+                nf.write("</emission-export>")
+                index += 1
+                nf.close()
+                nf = open(os.path.join(_EMISION_FOLDER, filename + "_" + str(index) + ".xml"), "w")
+                nf.write("<emission-export>\n")
+            line = f.readline()
+    finally:
+        f.close()
+        nf.close()
+    return nf_path
+
+def getNextEmissionFile(filepath, index):
+    filename = os.path.splitext(os.path.basename(filepath))[0]
+    if not os.path.exists(os.path.join(_EMISION_FOLDER, filename + "_" + str(index) + ".xml")):
+        raise OSError("No next emission file at: %s" %  os.path.join(_EMISION_FOLDER, filename + "_" + str(index) + ".xml"))
+    
+    return os.path.join(_EMISION_FOLDER, filename + "_" + str(index) + ".xml")
+
+def validateEmissionFileSize(filepath):
+    """
+    Determines if the emission file can be parsed in with Element tree based on its size.
+    Returns True if size is within the threshold of the limit, False otherwise
+    """
+    return os.path.getsize(os.path.abspath(filepath)) < (2**28)
+
+def getLastEmissionFile(filepath):
+    filename = os.path.splitext(os.path.basename(filepath))[0]
+    for index in range(len(os.listdir(_EMISION_FOLDER)) + 1):
+        f = os.path.join(_EMISION_FOLDER, filename + "_" + str(index) + ".xml")
+        if not os.path.exists(f):
+            return os.path.join(_EMISION_FOLDER, filename + "_" + str(index) + ".xml")
+
+def getFirstEmissionFile(filepath):
+    filename = os.path.splitext(os.path.basename(filepath))[0]
+    return os.path.join(_EMISION_FOLDER, filename + "_" + str(0) + ".xml")
