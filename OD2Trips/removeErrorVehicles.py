@@ -5,7 +5,7 @@ def fillOptions(argParser):
                             metavar="FILE",
                             help="SUMO network FILE (mandatory)")
     argParser.add_argument("-t", "--trips-file",
-                            metavar="FILE", default="veh_passenger", 
+                            metavar="FILE", 
                             help="update trips to FILE")
     argParser.add_argument("-c", "--vehicle-class", 
                             type=str, default="passenger", 
