@@ -11,7 +11,6 @@ Components
  - Creating Large Netfiles
 
 #include "chargeStation.md"
-#inclue "other.md"
 
 SUMO github page:
 
