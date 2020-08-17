@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 08/17/20 14:27:26 by Eclipse SUMO netedit Version 1.6.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingStation\test.net.xml"/>
+    </input>
+
+    <output>
+        <output-file value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingStation\test.net.xml"/>
+        <output.street-names value="true"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="false"/>
+    </processing>
+
+    <junctions>
+        <no-internal-links value="false"/>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.5"/>
+        <rectangular-lane-cut value="false"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="true"/>
+    </pedestrian>
+
+    <netedit>
+        <additional-files value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingStation\charge.add.xml"/>
+    </netedit>
+
+    <report>
+        <aggregate-warnings value="5"/>
+    </report>
+
+</configuration>
+-->
+
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+    <busStop id="busStop_422420305#6_0_1" lane="422420305#6_0" startPos="2.41" endPos="12.41"/>
+    <busStop id="busStop_555505970#7_0_0" lane="555505970#7_0" startPos="47.55" endPos="57.55" name="bus 2"/>
+    <chargingStation id="chargingStation_-25166035_0_0" lane="-25166035_0" startPos="7.82" endPos="17.82"/>
+    <chargingStation id="chargingStation_25167037_0_1" lane="25167037_0" startPos="0.00" endPos="28.38" friendlyPos="1" efficiency="0.90" chargeDelay="5.00"/>
+    <chargingStation id="chargingStation_361991757#0_0_3" lane="361991757#0_0" startPos="15.58" endPos="25.58"/>
+    <chargingStation id="chargingStation_422420305#6_0_4" lane="422420305#6_0" startPos="0.00" endPos="77.37" name="number1" friendlyPos="1" power="100.00" chargeDelay="5.00"/>
+</additional>
