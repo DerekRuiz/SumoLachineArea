@@ -6,6 +6,7 @@ rem -b: the beginning time that the first trip arrives
 rem -e: the end time that the last trip arrives
 rem --seed: an initial seed for psuedo randomness
 rem --fringe-factor: the probability that a trip starts at an edge with no successor or predecessor
+rem Total number of vehicles is: (e - b) / p
 
 @ECHO ON
 
