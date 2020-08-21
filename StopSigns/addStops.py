@@ -19,30 +19,26 @@ def stopAtEdge(net : sumolib.net.Net, edgeID : str, vehicle_type : str):
 
 def fillOptions(argParser):
     argParser.add_argument("-n", "--sumo-network-file", 
-                            metavar="FILE",
+                            metavar="FILE", required=True,
                             help="SUMO network FILE (mandatory)")
     argParser.add_argument("-r", "--route-file",
-                            metavar="FILE",
-                            help="update routes in FILE")
+                            metavar="FILE", required=True,
+                            help="update routes in FILE (mandatory)")
     argParser.add_argument("-o", "--output-file",
                             metavar="FILE",
                             help="write new route to FILE. Writes to --route-file FILE if unspecified")
-    argParser.add_argument("-c", "--vehicle-class",
-                            type=str, default="passenger", 
+    argParser.add_argument("-v", "--vehicle-class",
+                            metavar="STR", type=str, default="passenger", 
                             help="adds stops for vehicles of this type")
 
 def parse_args(args=None):
-    argParser = argparse.ArgumentParser(description="Adds class type from vehicle type to OD trips")
+    argParser = argparse.ArgumentParser(description="Add stops to the routes/trips of vehicles")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
 
 
 if __name__ == "__main__":
     options, argParser = parse_args()
-
-    if not options.sumo_network_file:
-        argParser.print_help()
-        argParser.exit("Error! Providing a od trip file is mandatory")
     
     if not options.output_file:
         options.output_file = options.route_file

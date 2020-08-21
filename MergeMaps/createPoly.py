@@ -8,10 +8,12 @@ import argparse
 
 
 def fillOptions(argParser):
-    argParser.add_argument("-g", "--montreal-geometry", metavar="FILE",
-                            help="montreal geometry using xml or geojson")
-    argParser.add_argument("-p", "--polygon-file", metavar="FILE",
-                            help="write polygons to FILE")
+    argParser.add_argument("-g", "--montreal-geometry", 
+                            metavar="FILE", required=True,
+                            help="montreal geometry using xml or geojson (mandatory)")
+    argParser.add_argument("-p", "--polygon-file", 
+                            metavar="FILE", required=True,
+                            help="write polygons to FILE (mandatory)")
     argParser.add_argument("-b", "--use-districts",
                             action='store_true', dest='districts', default=False,
                             help="use districts of montreal to create montreal osm")
@@ -19,7 +21,7 @@ def fillOptions(argParser):
 
 
 def parse_args(args=None):
-    argParser = argparse.ArgumentParser(description="Adds class type from vehicle type to OD trips")
+    argParser = argparse.ArgumentParser(description="Create polygon file to get the shape of the map")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
 

@@ -11,9 +11,11 @@ def setStatePed(edges):
 
 
 def fillOptions(argParser):
-    argParser.add_argument("-n", "--sumo-net-file", metavar="FILE",
+    argParser.add_argument("-n", "--sumo-net-file", 
+                            metavar="FILE", required=True,
                             help="Read SUMO-net from FILE")
-    argParser.add_argument("-c", "--csv-file", metavar="FILE",
+    argParser.add_argument("-c", "--csv-file", 
+                            metavar="FILE", required=True,
                             help="Read TLS schedules from FILE")
     argParser.add_argument("-o", "--programs-output-file", 
                             metavar="FILE", default='tlsPrograms.add.xml',
@@ -21,7 +23,7 @@ def fillOptions(argParser):
 
 
 def parse_args(args=None):
-    argParser = argparse.ArgumentParser()
+    argParser = argparse.ArgumentParser(description="Creates an additional file containing the programs of traffic lights")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
 
@@ -29,21 +31,13 @@ def parse_args(args=None):
 if __name__ == "__main__":
     options, argParser = parse_args()
 
-    # Get net file
-    if not options.sumo_net_file:
-        argParser.print_help()
-        argParser.exit("Error! Providing a net file is mandatory")
-    else:
-        if not path.exists(options.sumo_net_file):
-            argParser.exit("Error! Net file not found")
+    # Set net file
+    if not path.exists(options.sumo_net_file):
+        argParser.exit("Error! Net file not found")
 
-    # Get csv file
-    """if not options.csv_file:
-        argParser.print_help()
-        argParser.exit("Error! Providing a csv file is mandatory")
-    else:
-        if not path.exists(options.csv_file):
-            argParser.exit("Error! CSV file not found")"""
+    # Set csv file
+    if not path.exists(options.csv_file):
+        argParser.exit("Error! CSV file not found")
 
     import sumolib
     import pandas as pd

@@ -1,0 +1,1 @@
+python speedTest.py -c mergeMaps/montreal.sumocfg --initial 100 --increment 100 --loop 10 --stop-spawning 300 --seed 18

@@ -2,12 +2,13 @@ import argparse
 
 
 def fillOptions(argParser):
-    argParser.add_argument("-osm", "--osm-file", metavar="FILE",
-                            help='add "</osm>" to end of FILE')
+    argParser.add_argument("-osm", "--osm-file", 
+                            metavar="FILE", required=True,
+                            help='add "</osm>" tag to end of FILE')
     
 
 def parse_args(args=None):
-    argParser = argparse.ArgumentParser(description="Adds class type from vehicle type to OD trips")
+    argParser = argparse.ArgumentParser(description="Add OSM tag to the end of osm file if missing")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
 

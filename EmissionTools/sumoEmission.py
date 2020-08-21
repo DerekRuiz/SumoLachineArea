@@ -11,7 +11,6 @@ import pandas as pd
 import warnings
 
 ## Global ##
-
 _MAP_ETYPE_TO_INDEX = {"fuel":0,"co2":1,"co":2,"hc":3,"nox":4,"pmx":5}
 
 def validateEtype(eTypes):

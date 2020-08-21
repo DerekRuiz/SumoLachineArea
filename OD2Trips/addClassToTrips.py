@@ -6,7 +6,7 @@ def writeToFile(options):
     od_tree = ET.parse(options.odtrip_file)
     root = od_tree.getroot()
     if root.tag != "routes":
-        exit("OD trip file not proper file")
+        exit("OD trip file not proper file structure")
     atrributes = {"id":options.vehicle_id, "vClass":options.vehicle_class}
     vtype = ET.Element("vType",attrib=atrributes)
     root.insert(0,vtype)
@@ -27,12 +27,15 @@ def writeToFile(options):
 
 
 def fillOptions(argParser):
-    argParser.add_argument("-od", "--odtrip-file",
-                           help="write class type to FILE (mandatory)", metavar="FILE")
-    argParser.add_argument("-i", "--vehicle-id", type=str,
-                           default="veh_passenger", help="assigns a vehicle type this id")
-    argParser.add_argument("-c", "--vehicle-class", type=str,
-                           default="passenger", help="assigns a vehicle type this class")
+    argParser.add_argument("-od", "--odtrip-file", 
+                            metavar="FILE", required=True,
+                            help="write class type to FILE (mandatory)")
+    argParser.add_argument("-i", "--vehicle-id", 
+                            type=str, default="veh_passenger", metavar="STR",
+                            help="assigns a vehicle type this id")
+    argParser.add_argument("-v", "--vehicle-class", 
+                            type=str, default="passenger", metavar="STR",
+                            help="assigns a vehicle type this class")
 
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Adds class type from vehicle type to OD trips")
@@ -42,9 +45,5 @@ def parse_args(args=None):
 
 if __name__ == "__main__":
     options, argParser = parse_args()
-
-    if not options.odtrip_file:
-        argParser.print_help()
-        argParser.exit("Error! Providing a od trip file is mandatory")
 
     writeToFile(options)
