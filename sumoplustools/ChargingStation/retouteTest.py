@@ -1,12 +1,16 @@
 import sumolib
-import sys
 import traci
 import numpy as np
 import xml.etree.ElementTree as ET
-import argparse
+
+def setSSUMOcfgFile(sumocfg : str):
+    global sumocfgFile
+    sumocfgFile = sumocfg
 
 def getAdditionalFiles():
     global addFiles
+    global sumocfgFile
+
     if not "addFiles" in globals():
         tree = ET.parse(sumocfgFile)
         root = tree.getroot()
@@ -40,6 +44,13 @@ def getChargingStationLanes():
 
 
 def updateAllElecVehicleChargingRoutes():
+    try:
+        traci.getConnection()
+    except traci.TraCIException:
+        raise
+    
+    global vehiclesOnRoute
+
     for vehicleID in traci.vehicle.getIDList():
         hasBattery = (traci.vehicle.getParameter(vehicleID, "has.battery.device") == "true")
         if not hasBattery:
@@ -79,48 +90,7 @@ def updateAllElecVehicleChargingRoutes():
         elif (float(battery) < float(batteryTotal) * 0.8) and (charging != "NULL") and (vehicleID in vehiclesOnRoute) and (traci.vehicle.getStopState(vehicleID) == 65):
             traci.vehicle.setChargingStationStop(vehicleID, charging, duration=50)
 
-def fillOptions(argParser):
-    argParser.add_argument("-c", "--sumo-config-file", 
-                            metavar="FILE", required=True,
-                            help="use FILE to populate data using TraCI (mandatory)")
-    argParser.add_argument("-g", "--gui", 
-                            action='store_true', default=False,
-                            help="appends testing results to FILE")
-
-def parse_args(args=None):
-    argParser = argparse.ArgumentParser(description="Start SUMO simulation with vehicles with batteries reroute to charging stations")
-    fillOptions(argParser)
-    return argParser.parse_args(args), argParser
-
-
 if __name__ == "__main__":
-    options, argParser = parse_args()
-    
-    if options.gui:
-        binary = "sumo-gui"
-    else:
-        binary = "sumo"
-
-    sumoBinary = sumolib.checkBinary(binary)
-    sumocfgFile = options.sumo_config_file
-    sumoCmd = [sumoBinary, "-c", sumocfgFile] #, "--start", "1"
-
-    try:
-        traci.getConnection()
-    except traci.TraCIException:
-        traci.start(sumoCmd)
-
+    global vehiclesOnRoute
     vehiclesOnRoute = {}
 
-    while traci.simulation.getMinExpectedNumber() > 0:
-        print("current time: ",traci.simulation.getTime())
-        
-        updateAllElecVehicleChargingRoutes()
-        
-        traci.simulationStep()
-
-    try:
-        print("done")
-        traci.close()
-    except:
-        pass
