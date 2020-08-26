@@ -58,7 +58,7 @@ contains the following files:
 createBoundaryFile.py : Transforms a geoJSON to a boundary file. <br/>
 addOSM.py : Adds an OSM tag to the end of an OSM file if missing.
 
-<label><h3>Emissions of Vehicles</h3></label>
+<label><h3> Emissions of Vehicles </h3></label>
 Deals with emission outputs generated from vehicles in the simulation.
 
 Contains the following files:
