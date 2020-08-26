@@ -8,20 +8,19 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
     <th> Table of Contents </th>
   </tr>
 </table>
-<ul>
- <li> Added SUMO Tools(#-tools-) </li>
- <ul>
-  <li> [Charging Stations](#-charging-station-) </li>
-  <li> [Create Map](#-create-map-) </li>
-  <li> [Emissions of Vehicles](#-emissions-) </li>
-  <li> [Origin to Destination Trips](#-odtrips-) </li>
-  <li> [Performance Test](#-speed-test-) </li>
-  <li> [Stop Signs](#-stop-signs-) </li>
-  <li> [Traffic Light Intersection](#-tl-intersection-) </li>
- </ul>
- <li> [Pre-Built Functions](#-functions-) </li>
- <li> [Examples Simulations](#-examples-) </li>
-</ul>
+
+* [Added SUMO Tools](#-tools-)
+  * [Charging Stations](#-charging-station-)
+  * [Create Map](#-create-map-)
+  * [Emissions of Vehicles](#-emissions-)
+  * [Origin to Destination Trips](#-odtrips-)
+  * [Performance Test](#-speed-test-)
+  * [Stop Signs](#-stop-signs-)
+  * [Traffic Light Intersection](#-tl-intersection-)
+
+* [Pre-Built Functions](#-functions-)
+* [Examples Simulations](#-examples-)
+
 
 SUMO github page:
 
@@ -59,7 +58,7 @@ contains the following files:
 createBoundaryFile.py : Transforms a geoJSON to a boundary file. <br/>
 addOSM.py : Adds an OSM tag to the end of an OSM file if missing.
 
-<label id="emissions"><h3> Emissions of Vehicles </h3></label>
+<label><h3 id="emissions"> Emissions of Vehicles </h3></label>
 Deals with emission outputs generated from vehicles in the simulation.
 
 Contains the following files:
