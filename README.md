@@ -37,7 +37,7 @@ TraCI pydocs page:
         https://sumo.dlr.de/pydoc/traci.html
 
 <label><h2> Getting Started </h2></label>
-Simulation of Urban Mobility has 3 primary types of files necessary to start a simulation: [network](https://github.com/DerekRuiz/SumoLachineArea/wiki/Network-Files) \(.net.xml\), [route](../wiki/Route-Files) \(.rou.xml\), and [SUMO configuration](https://github.com/DerekRuiz/SumoLachineArea/wiki/SUMO-Configuration-Files) \(.sumocfg\) files. Only the extention 'xml' is neccessary to load these files, however, to keep the files organized it is recommended to use the prefix-extention when applicable.
+Simulation of Urban Mobility has 3 primary types of files necessary to start a simulation: [network](../../wiki/Network-Files) (.net.xml), [route](../../wiki/Route-Files) (.rou.xml), and [SUMO configuration](../../wiki/SUMO-Configuration-Files) (.sumocfg) files. Only the extention 'xml' is neccessary to load these files, however, to keep the files organized it is recommended to use the prefix-extention when applicable.
 
 Network files contains all the nodes and edges that represent the intersections and streets of a map. Route files contain the vehicles and the paths that they will take during the simulation. SUMO configuration files allows the ability to run the simulation by referencing the network, route, and any other files.
 All of these files can created and edited in the NETEDIT application that comes joined with SUMO.
