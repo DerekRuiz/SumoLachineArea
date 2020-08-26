@@ -24,7 +24,7 @@ if __name__ == "__main__":
     options, argParser = parse_args()
 
     if not (os.path.exists(options.od_matrix_dir) and os.path.isdir(options.od_matrix_dir)):
-        raise Exception('There is no folder titled OD_Matrices')
+        raise Exception('There is no folder %s' % os.path.abspath(options.od_matrix_dir))
 
     od_matrix_files = os.listdir(options.od_matrix_dir)
     try:
@@ -33,7 +33,7 @@ if __name__ == "__main__":
         pass
 
     if len(od_matrix_files) == 0:
-        raise Exception("No files in OD_Matrices folder")
+        raise Exception("No files in OD Matrices folder")
     
     value = ""
     for f in od_matrix_files:

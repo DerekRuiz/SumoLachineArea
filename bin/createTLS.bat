@@ -1,8 +1,8 @@
 @ECHO OFF
-set /p net="Enter file path of the SUMO network file. >"
-set /p csv="Enter file path of the intersection csv file. >"
-set /p output="Enter file path of the output SUMO network file. >"
-set /p useSched="Do you wish to use a file containing schedules for the intersections? (y/n) >"
+set /p net="Enter file path of the SUMO network file: >"
+set /p csv="Enter file path of the intersection csv file: >"
+set /p output="Enter file path of the output SUMO network file: >"
+set /p useSched="Do you wish to use a file containing schedules for the intersections? (y/n): >"
 set sumoplustools=../sumoplustools/
 
 if %useSched% == y (

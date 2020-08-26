@@ -2,7 +2,7 @@
 import sumolib
 import traci
 import argparse
-import sumoplustools.ChargingStation.retouteTest as cs
+from sumoplustools.ChargingStation import routeToCharge as cs
 
 
 def fillOptions(argParser):
@@ -11,7 +11,10 @@ def fillOptions(argParser):
                             help="use FILE to populate data using TraCI (mandatory)")
     argParser.add_argument("-g", "--gui", 
                             action='store_true', default=False,
-                            help="appends testing results to FILE")
+                            help="uses the SUMO GUI")
+    argParser.add_argument("-s", "--start-on-open",
+                            action="store_true", default=False,
+                            help="starts the simulation automatically after the GUI is loaded")
 
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Start SUMO simulation with vehicles with batteries reroute to charging stations")
@@ -22,29 +25,35 @@ def parse_args(args=None):
 if __name__ == "__main__":
     options, argParser = parse_args()
     
+    extraCmd = []
     if options.gui:
         binary = "sumo-gui"
+        if options.start_on_open:
+            extraCmd += ["--start", "1"]
     else:
         binary = "sumo"
 
+    # Initialize variables
     sumoBinary = sumolib.checkBinary(binary)
     sumocfgFile = options.sumo_config_file
-    sumoCmd = [sumoBinary, "-c", sumocfgFile] #, "--start", "1"
+    sumoCmd = [sumoBinary, "-c", sumocfgFile] + extraCmd
+    connLabel = "mainConn"
 
-    try:
-        traci.getConnection()
-    except traci.TraCIException:
-        traci.start(sumoCmd)
+    # Establish connection to SUMO server and set connection
+    traci.start(sumoCmd, label=connLabel)
+    connection = traci.getConnection(label=connLabel)
 
-    while traci.simulation.getMinExpectedNumber() > 0:
-        print("current time: ",traci.simulation.getTime())
-        
-        cs.updateAllElecVehicleChargingRoutes()
-        
-        traci.simulationStep()
+    rcd = cs.rerouteChargingDomain(sumocfgFile, connection)
 
+    while connection.simulation.getMinExpectedNumber() > 0:
+        connection.simulationStep()
+
+        print("current time: ", connection.simulation.getTime())
+        rcd.rerouteVehicles()
+    
+    # Close the simulation
     try:
         print("done")
-        traci.close()
+        connection.close()
     except:
         pass

@@ -1,6 +1,6 @@
 @ECHO OFF
 
-set /p sumocfg="Enter file path of the SUMO configuration file. >"
+set /p sumocfg="Enter file path of the SUMO configuration file: >"
 
 @ECHO ON
 

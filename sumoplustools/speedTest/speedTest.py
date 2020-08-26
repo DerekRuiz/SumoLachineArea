@@ -95,7 +95,7 @@ def fillOptions(argParser):
                             help="generate vehicles of STR type")
 
 def parse_args(args=None):
-    argParser = argparse.ArgumentParser(description="Tests the speed of the SUMO simulation with increasing amount of vehicles")
+    argParser = argparse.ArgumentParser(description="Tests the performance of the SUMO simulation with increasing amount of vehicles")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
 
