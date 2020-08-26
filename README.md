@@ -37,6 +37,7 @@ TraCI pydocs page:
         https://sumo.dlr.de/pydoc/traci.html
 
 <label><h2> Getting Started </h2></label>
+Simulation of Urban Mobility has 3 primary types of files necessary to start a simulation: network \(.net.xml\), route \(.rou.xml\), and SUMO configuration \(.sumocfg\) files.
 
 <label><h2> Added SUMO Tools </h2></label>
 Note: All folders and files are located in the 'sumoplustools' directory <br/>
