@@ -9,6 +9,7 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
   </tr>
 </table>
 
+* [Getting Stated](#-getting-started-)
 * [Added SUMO Tools](#-added-sumo-tools-)
   * [Charging Stations](#-charging-station-)
   * [Create Map](#-create-map-)
@@ -35,6 +36,7 @@ TraCI pydocs page:
 
         https://sumo.dlr.de/pydoc/traci.html
 
+<label><h2> Getting Started </h2></label>
 
 <label><h2> Added SUMO Tools </h2></label>
 Note: All folders and files are located in the 'sumoplustools' directory <br/>
