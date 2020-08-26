@@ -27,7 +27,7 @@ SUMO github page:
 
         https://github.com/eclipse/sumo
 
-SUMOlib and TraCI are two python modules to communicate with the SUMO application.
+SUMOlib and TraCI are two python modules to communicate with the SUMO application.<br/>
 SUMOlib pydocs page:
 
         https://sumo.dlr.de/pydoc/sumolib.html
