@@ -12,14 +12,14 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
 * [Added SUMO Tools](#-tools-)
   * [Charging Stations](#-charging-station-)
   * [Create Map](#-create-map-)
-  * [Emissions of Vehicles](#-emissions-)
-  * [Origin to Destination Trips](#-odtrips-)
-  * [Performance Test](#-speed-test-)
+  * [Emissions of Vehicles](#-emissions-of-vehicles-)
+  * [Origin to Destination Trips](#-origin-to-destination-trips-)
+  * [Performance Test](#-performance-test-)
   * [Stop Signs](#-stop-signs-)
-  * [Traffic Light Intersection](#-tl-intersection-)
+  * [Traffic Light Intersection](#-traffic-light-intersection-)
 
-* [Pre-Built Functions](#-functions-)
-* [Examples Simulations](#-examples-)
+* [Pre-Built Functions](#-pre-built-functions-)
+* [Examples Simulations](#-examples simulations-)
 
 
 SUMO github page:
@@ -58,7 +58,7 @@ contains the following files:
 createBoundaryFile.py : Transforms a geoJSON to a boundary file. <br/>
 addOSM.py : Adds an OSM tag to the end of an OSM file if missing.
 
-<label><h3 id="emissions"> Emissions of Vehicles </h3></label>
+<label><h3 id="emissions">Emissions of Vehicles</h3></label>
 Deals with emission outputs generated from vehicles in the simulation.
 
 Contains the following files:
