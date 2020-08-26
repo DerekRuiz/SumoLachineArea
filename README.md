@@ -9,7 +9,7 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
   </tr>
 </table>
 
-* [Added SUMO Tools](#-tools-)
+* [Added SUMO Tools](#-added-sumo-tools-)
   * [Charging Stations](#-charging-station-)
   * [Create Map](#-create-map-)
   * [Emissions of Vehicles](#-emissions-of-vehicles-)
@@ -19,7 +19,7 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
   * [Traffic Light Intersection](#-traffic-light-intersection-)
 
 * [Pre-Built Functions](#-pre-built-functions-)
-* [Examples Simulations](#-examples simulations-)
+* [Example Simulations](#-example-simulations-)
 
 
 SUMO github page:
@@ -36,9 +36,9 @@ TraCI pydocs page:
         https://sumo.dlr.de/pydoc/traci.html
 
 
-<label id="tools"><h2> Added SUMO Tools </h2></label>
+<label><h2> Added SUMO Tools </h2></label>
 Note: All folders and files are located in the 'sumoplustools' directory <br/>
-<label id="chargingStation"><h3> Charging Station </h3></label>
+<label><h3> Charging Station </h3></label>
 Works with charging stations and vehicles with batteries.
 
 Contains the following files:
@@ -48,7 +48,7 @@ Contains the following files:
 addChargingStation.py : Creates a SUMO additional file containing the charging stations provided by a CSV, JSON, or XML. <br/>
 routeToCharge.py : Reroutes vehicles to the closest charging station when low on battery power. Can only be run while a traCI connection has been established to a SUMO server.
 
-<label id="createMaps"><h3> Create Map </h3></label>
+<label><h3> Create Map </h3></label>
 Creates SUMO network files from OSM files. OSM files can be given directly or a larger OSM file and a boundary file can be provided.
 
 contains the following files:
@@ -58,7 +58,7 @@ contains the following files:
 createBoundaryFile.py : Transforms a geoJSON to a boundary file. <br/>
 addOSM.py : Adds an OSM tag to the end of an OSM file if missing.
 
-<label><h3 id="emissions">Emissions of Vehicles</h3></label>
+<label><h3>Emissions of Vehicles</h3></label>
 Deals with emission outputs generated from vehicles in the simulation.
 
 Contains the following files:
@@ -72,7 +72,7 @@ emissionIO.py : Connects with input / output methods dealing with emissions. <br
 generateEmissions.py : Gathers options from the command line and calls sumoEmission.py with the inputted options. <br/>
 sumoEmission.py : Generates GeoPackage files containg the emission outputs of vehicles for a given. timestep
 
-<label id="odtrips"><h3> Origin to Destination Trips </h3></label>
+<label><h3> Origin to Destination Trips </h3></label>
 Uses origin to destination matrices to create trips.
 
 Contains the following files:
@@ -84,7 +84,7 @@ addClassToTrips.py : Creates a vehicle class and adds it to the trip file. <br/>
 updateMatrixConf.py : Updates the given configuration file to reference all OD matrices in a given directory. <br/>
 validateTrips.py : Validates the given trip to ensure that the vehicles can travel on it.
 
-<label id="speedTest"><h3> Performance Test </h3></label>
+<label><h3> Performance Test </h3></label>
 Does performance tests on a configuration file with increasing amount of vehicles.
 
 Contains the following files:
@@ -92,7 +92,7 @@ Contains the following files:
 
 speedTest.py : Tests the performance of of the SUMO simulation and outputs it to an output file.
 
-<label id="stopSigns"><h3> Stop Signs </h3></label>
+<label><h3> Stop Signs </h3></label>
 Works with the stops in SUMO.
 
 Contains the following files:
@@ -100,7 +100,7 @@ addStops.py
 
 addStops.py : Adds stops to vehicle routes to indicate where the stop signs are.
 
-<label id="tlIntersection"><h3> Traffic Light Intersection </h3></label>
+<label><h3> Traffic Light Intersection </h3></label>
 Works with traffic lights in SUMO
 
 Contains the following files:
@@ -110,7 +110,7 @@ Contains the following files:
 addTLS.py : Creates a SUMO node file containg the traffic light locations. <br/>
 addTLSPrograms.py : Creates a SUMO additional file containing the programs of the traffic lights.
 
-<label id="functions"><h2> Pre-Built Functions </h2></label>
+<label><h2> Pre-Built Functions </h2></label>
 Note: All folders and files are located in the 'bin' directory <br/>
 
 * buildRandomTrips.bat : Creates random trips for pedestrians, bicycles, motorcycles, passenger vehicles, trucks, buses, and railways.
@@ -121,7 +121,7 @@ Note: All folders and files are located in the 'bin' directory <br/>
 * runWithTraci.py : Runs a SUMO simulation with the traCI program running in the program. This allows parallel integration of custom rerouting.
 * speedTestMontreal.bat : Tests the performance of a SUMO simulation with specific arguments.
 
-<label id="examples"><h2> Example Simulations </h2></label>
+<label><h2> Example Simulations </h2></label>
 
 * Montreal
 * Lachine
