@@ -45,7 +45,7 @@ All of these files can created and edited in the NETEDIT application that comes 
 ---
 <h3> How to Create Network File </h3>
 SUMO has created a webwizard to create an OSM and convert it to a SUMO application. Located in the "%SUMO_HOME%/tools" directory, the file is titled "osmWebWizard.py" (it requires python to start up).
-<br/>
+<br/><br/>
 If you already have an OSM file that you wish to use, then use SUMO netconvert application. Located in the "%SUMO_HOME%/bin" directory, the file is titled "netconvert.exe". This application must be opened using the command prompt. To convert an OSM file to a SUMO network file, enter the following into the command prompt "%SUMO_HOME%/bin/netconvert.exe --osm-files PATH/TO/OSM_FILE.osm -o PATH/TO/OUTPUT_NETWORK.net.xml" while replacing with relevent file paths. For more available options enter the command "%SUMO_HOME%/bin/netconvert.exe --help".
 
 <h3> How to Start a SUMO Application </h3>
