@@ -44,12 +44,18 @@ All of these files can created and edited in the NETEDIT application that comes 
 
 ---
 <h3> How to Create Network File </h3>
-SUMO has created a webwizard to create an OSM and convert it to a SUMO application. Located in the "%SUMO_HOME%/tools" directory, the file is titled "osmWebWizard.py" /(it requires python to start up\).
+SUMO has created a webwizard to create an OSM and convert it to a SUMO application. Located in the "%SUMO_HOME%/tools" directory, the file is titled "osmWebWizard.py" (it requires python to start up).
 
 If you already have an OSM file that you wish to use, then use SUMO netconvert application. Located in the "%SUMO_HOME%/bin" directory, the file is titled "netconvert.exe". This application must be opened using the command prompt. To convert an OSM file to a SUMO network file, enter the following into the command prompt "%SUMO_HOME%/bin/netconvert.exe --osm-files PATH/TO/OSM_FILE.osm -o PATH/TO/OUTPUT_NETWORK.net.xml" while replacing with relevent file paths. For more available options enter the command "%SUMO_HOME%/bin/netconvert.exe --help".
 
 <h3> How to Start a SUMO Application </h3>
+From the NETEDIT application, after importing all the additional and route files, go to the "edit" tab then select "Open in SUMO-GUI" option. This will open the SUMO-GUI application and start the simulation that was opened in the NETEDIT application.
 
+To use the SUMO-GUI, go to the "%SUMO_HOME%/bin" directory and open sumo-gui.exe. Go to the "file" tab then select "Open Simulation..." if you have a .sumocfg file or select "Open Network..." if you have a SUMO network file.
+
+To start a simulation in a command prompt without the SUMO-GUI, open the command prompt and enter "%SUMO_HOME%/bin/sumo.exe" followed by the desired arguments. The most common argument used is "-c PATH/TO/SUMOCONFIG.sumocfg" where the .sumocfg file contains references to all other files used in the simulation. For other options use the argument "--help".
+
+If you have a .sumocfg file then double click on the file or run it in a command prompt. To run in a prompt, type "sumo-gui.exe PATH/TO/SUMOCONFIG.sumocfg" to start the simulation, "sumo-gui.exe" can be omitted from the command if the default application to open a .sumocfg file is the SUMO-GUI application.
 
 <label><h2> Added SUMO Tools </h2></label>
 Note: All folders and files are located in the 'sumoplustools' directory <br/>
