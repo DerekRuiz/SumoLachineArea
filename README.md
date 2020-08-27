@@ -135,7 +135,7 @@ addTLSPrograms.py : Creates a SUMO additional file containing the programs of th
 Note: All folders and files are located in the 'bin' directory <br/>
 
 * buildRandomTrips.bat : Creates random trips for pedestrians, bicycles, motorcycles, passenger vehicles, trucks, buses, and railways.
-* createMap.bat : Creates a SUMO network file from an OSM file and a boundry.
+* downsizeMap.bat : Creates a SUMO network file from an OSM file and a boundry.
 * createODTrips.bat : Creates SUMO route files for passenger vehicles, motorcycles, buses, and trucks using origin to destination matrices.
 * createOutputFiles.bat : Generates emission outputs, vehicles positions, lane changes, and VTK files.
 * createTLS.bat : Adds traffic lights and their programs to a SUMO network file.
