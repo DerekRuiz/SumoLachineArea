@@ -1,9 +1,5 @@
 @ECHO OFF
 
-set /p cont="The following files may take a while to create. Do you wish to continue? (y/n): >"
-
-if %cont% == n exit
-
 set /p cfgfile="Enter the sumocfg file: >"
 set /p output="Enter the directory for the output files: >"
 
