@@ -1,5 +1,10 @@
-import sumolib
 import argparse
+import sumolib
+import traci
+
+_duration = 1.0
+_start_pos = -1.0
+_end_pos = -1.0
 
 def stopAtEdge(net : sumolib.net.Net, edgeID : str, vehicle_type : str):
     noStops = ["dead_end","traffic_light"]
@@ -16,6 +21,13 @@ def stopAtEdge(net : sumolib.net.Net, edgeID : str, vehicle_type : str):
         return False
     
     return True
+
+def getStopParam() -> (float, float, float):
+    """
+    Returns the parameters for a stop on an edge.
+    Returns a tuple containing (start position, end position, time duration)
+    """
+    return (_start_pos, _end_pos, _duration)
 
 def fillOptions(argParser):
     argParser.add_argument("-n", "--sumo-network-file", 
@@ -63,9 +75,9 @@ if __name__ == "__main__":
                     if lane.allows(options.vehicle_class):
                         stopElem = ET.Element("stop")
                         stopElem.set("lane", lane.getID())
-                        stopElem.set("startPos", "-1.00")
-                        stopElem.set("endPos", "-1.00")
-                        stopElem.set("duration", "1.00")
+                        stopElem.set("startPos", "%.2f" % _start_pos)
+                        stopElem.set("endPos", "%.2f" % _end_pos)
+                        stopElem.set("duration", "%.2f" % _duration)
                         stopElem.set("friendlyPos", "1")
                         vehicle.append(stopElem)
 
