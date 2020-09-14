@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 07/06/20 12:53:03 by Eclipse SUMO duarouter Version 1.6.0
+<!-- generated on 09/01/20 13:35:29 by Eclipse SUMO duarouter Version 1.6.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
 
     <input>
-        <net-file value="lachine.net.xml"/>
-        <route-files value="Trips/tripLachine.passenger.trips.xml"/>
+        <net-file value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\Lachine\lachine.net.xml"/>
+        <route-files value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\Lachine/Trips/tripLachine.passenger.trips.xml"/>
     </input>
 
     <output>
-        <output-file value="Trips/tripLachine.passenger.trips.xml.tmp"/>
+        <output-file value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\Lachine/Trips/tripLachine.passenger.trips.xml.tmp"/>
         <write-trips value="true"/>
     </output>
 

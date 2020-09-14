@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- generated on 2020-07-06 12:52:40.102309 by randomTrips.py v1_6_0+0003-190709904e
-  options: -n lachine.net.xml <doubleminus>seed 42 <doubleminus>fringe-factor 1 -p 1 -o Trips/tripLachine.pedestrian.trips.xml -e 360 -r Trips\tripLachine.pedestrian.rou.xml <doubleminus>vehicle-class pedestrian <doubleminus>pedestrians <doubleminus>prefix ped <doubleminus>max-distance 2000
+<!-- generated on 2020-09-01 13:35:07.279186 by randomTrips.py v1_6_0+0003-190709904e
+  options: -n C:\Users\epicb\Documents\GitHub\SumoLachineArea\Lachine\lachine.net.xml <doubleminus>seed 42 <doubleminus>fringe-factor 1 -p 1 -e 360 -o C:\Users\epicb\Documents\GitHub\SumoLachineArea\Lachine/Trips/tripLachine.pedestrian.trips.xml -r Trips\tripLachine.pedestrian.rou.xml <doubleminus>vehicle-class pedestrian <doubleminus>pedestrians <doubleminus>prefix ped <doubleminus>max-distance 2000
 -->
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
     <vType id="ped_pedestrian" vClass="pedestrian"/>
