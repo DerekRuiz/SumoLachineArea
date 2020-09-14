@@ -25,11 +25,11 @@ if __name__ == "__main__":
 
     # Set net file
     if not path.exists(options.sumo_net_file):
-        argParser.exit("Error! Net file not found")
+        argParser.error("net file not found")
 
     # Set csv file
     if not path.exists(options.csv_file):
-        argParser.exit("Error! CSV file not found")
+        argParser.error("CSV file not found")
 
     import sumolib
     import pandas as pd
@@ -37,30 +37,29 @@ if __name__ == "__main__":
     from shapely.geometry import polygon
 
     net = sumolib.net.readNet(options.sumo_net_file)
-    nodes = net.getNodes()
-
     df = pd.read_csv(options.csv_file)
 
     topElem = ET.Element("nodes")
-
-
-    for node in nodes:
-        node_id = node.getID()
-        shape = node.getShape()
-        if len(shape) < 3:
-            continue
+    
+    xmin,ymin,xmax,ymax = net.getBoundary()
+    boundary = polygon.Polygon([(xmin,ymin),(xmax,ymin),(xmax,ymax),(xmin,ymax),(xmin,ymin)])
         
-        if node.getType() == 'traffic_light':
-            elem = ET.SubElement(topElem,'node')
-            elem.attrib = {'id':node_id, 'type':'traffic_light'}
-        else:
-            for _, row in df.iterrows():
-                lon, lat = row['long'], row['lat']
-                x, y = net.convertLonLat2XY(lon,lat)
+    for _, row in df.iterrows():
+        lon, lat = row['long'], row['lat']
+        x, y = net.convertLonLat2XY(lon,lat)
+        if not boundary.contains(polygon.Point(x,y)):
+            continue
 
-                if polygon.Polygon(shape).contains(polygon.Point(x,y)):
-                    elem = ET.SubElement(topElem,'node')
-                    elem.attrib = {'id':node_id, 'type':'traffic_light'}
+        for node in net.getNodes():
+            node_id = node.getID()
+            shape = node.getShape()
+            if len(shape) < 3:
+                continue
+
+            if polygon.Polygon(shape).contains(polygon.Point(x,y)):
+                elem = ET.SubElement(topElem,'node')
+                elem.attrib = {'id':node_id, 'type':'traffic_light'}
+                break
 
     tree = ET.ElementTree(topElem)
     tree.write(options.node_output_file)
