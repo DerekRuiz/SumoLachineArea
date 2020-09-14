@@ -5,6 +5,25 @@ import shutil
 
 _TEMP_FOLDER = "temp"
 _EMISION_FOLDER = "splitEmission"
+i = 0
+while os.path.exists(os.path.abspath(_TEMP_FOLDER)):
+    _TEMP_FOLDER = "temp(%i)" % i
+    i += 1
+
+def getOsmFileType(osmFile):
+    if os.path.isdir(osmFile):
+        for f in os.listdir(osmFile):
+            if os.path.splitext(f)[1] == ".shp":
+                return "shp folder"
+    elif os.path.splitext(osmFile)[1] == ".shp":
+        return "shp"
+    elif os.path.splitext(osmFile)[1] == '.geojson':
+        return "geojson"
+    elif os.path.splitext(osmFile)[1] == '.gpkg':
+        return "gpkg"
+    elif os.path.splitext(osmFile)[1] == '.osm':
+        return "osm"
+    return None
 
 def saveDataFrame(dataFrame, filepath):
     """
@@ -12,17 +31,16 @@ def saveDataFrame(dataFrame, filepath):
     Some data may be altered to properly save to GeoPackage format
     Use function loadDataFrame() to reverse the format change
     """
-    gdf = dataFrame.copy()
-    for col in gdf.columns:
+    for col in dataFrame.columns:
         if col == 'geometry':
             break
-        gdf[col] = gdf[col].astype(str)
-        if gdf[col].str.contains(",").any():
-            gdf[col] = gdf[col].apply(lambda x: str(x).replace("[","").replace("]","").replace(", "," ;-; ") if "," in str(x) else x)
+        dataFrame[col] = dataFrame[col].astype(str)
+        if dataFrame[col].str.contains(",").any():
+            dataFrame[col] = dataFrame[col].apply(lambda x: str(x).replace("[","").replace("]","").replace(", "," ;-; ") if "," in str(x) else x)
     
     if not '.gpkg' in filepath:
         filepath += '.gpkg'
-    gdf.to_file(filepath, driver="GPKG")
+    dataFrame.to_file(filepath, driver="GPKG")
 
 def loadDataFrame(filepath):
     """
@@ -48,13 +66,10 @@ def removeProjectTempFolder():
     if os.path.exists(_TEMP_FOLDER):
         shutil.rmtree(_TEMP_FOLDER)
 
-def getFilesInTemp(prefix=None):
+def getFilesInTemp(prefix="", extension=""):
     if not os.path.exists(_TEMP_FOLDER):
         return []
-    if prefix is None:
-        return os.listdir(_TEMP_FOLDER)
-    else:
-        return [f for f in os.listdir(_TEMP_FOLDER) if prefix in f]
+    return [f for f in os.listdir(_TEMP_FOLDER) if prefix in f and extension in f[-len(extension):]]
 
 def saveNumpyArray(npArray, filename):
     createProjectTempFolder()
@@ -122,3 +137,5 @@ def getLastEmissionFile(filepath):
 def getFirstEmissionFile(filepath):
     filename = os.path.splitext(os.path.basename(filepath))[0]
     return os.path.join(_EMISION_FOLDER, filename + "_" + str(0) + ".xml")
+
+
