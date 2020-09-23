@@ -73,25 +73,23 @@ routeToCharge.py : Reroutes vehicles to the closest charging station when low on
 Creates SUMO network files from OSM files. OSM files can be given directly or a larger OSM file and a boundary file can be provided.
 
 contains the following files:
-* createBoundaryFile.py
 * addOSM.py
+* createPoly.py
 
-createBoundaryFile.py : Transforms a geoJSON to a boundary file. <br/>
-addOSM.py : Adds an OSM tag to the end of an OSM file if missing.
+addOSM.py : Adds an OSM tag to the end of an OSM file if missing. <br/>
+createPoly.py : Transforms a geoJSON to a boundary polygon file.
 
 <label><h3> Emissions of Vehicles </h3></label>
 Deals with emission outputs generated from vehicles in the simulation.
 
 Contains the following files:
-* displayEmission.py
 * emissionIO.py
 * generateEmissions.py
-* sumoEmission.py
+* generateEmissionsTraci.py
 
-displayEmission.py : Displays the emissions generated in a GeoPackage using plots. <br/>
 emissionIO.py : Connects with input / output methods dealing with emissions. <br/>
-generateEmissions.py : Gathers options from the command line and calls sumoEmission.py with the inputted options. <br/>
-sumoEmission.py : Generates GeoPackage files containg the emission outputs of vehicles for a given. timestep
+generateEmissions.py : Generate emission data from a SUMO simulation and save the information to a geospatial database. <br/>
+generateEmissionsTraci.py : Use TraCI to generates emission data concurrently with the given simulation.
 
 <label><h3> Origin to Destination Trips </h3></label>
 Uses origin to destination matrices to create trips.
@@ -105,6 +103,22 @@ addClassToTrips.py : Creates a vehicle class and adds it to the trip file. <br/>
 updateMatrixConf.py : Updates the given configuration file to reference all OD matrices in a given directory. <br/>
 validateTrips.py : Validates the given trip to ensure that the vehicles can travel on it.
 
+<label><h3> Parking Spots </h3></label>
+Works with locations were different types of parkings are located.
+
+Contains the following files:
+* addASP.py
+
+addASP.py : Creates additional file containing alternative side parking.
+
+<label><h3> Postgresql </h3></label>
+Deals with any functionality to working with the Postgresql database.
+
+Contains the following files:
+* psqlObjects.py
+
+psqlObjects.py : Contains the classes that allow for communication with the database for different sectors (eg: Emission Outputs).
+
 <label><h3> Performance Test </h3></label>
 Does performance tests on a configuration file with increasing amount of vehicles.
 
@@ -117,7 +131,7 @@ speedTest.py : Tests the performance of of the SUMO simulation and outputs it to
 Works with the stops in SUMO.
 
 Contains the following files:
-addStops.py
+* addStops.py
 
 addStops.py : Adds stops to vehicle routes to indicate where the stop signs are.
 
@@ -126,7 +140,7 @@ Works with traffic lights in SUMO
 
 Contains the following files:
 * addTLS.py
-* addTLSPrograms.py
+* addTLSPrograms.py (Not Implemented Yet)
 
 addTLS.py : Creates a SUMO node file containg the traffic light locations. <br/>
 addTLSPrograms.py : Creates a SUMO additional file containing the programs of the traffic lights.
@@ -135,10 +149,10 @@ addTLSPrograms.py : Creates a SUMO additional file containing the programs of th
 Note: All folders and files are located in the 'bin' directory <br/>
 
 * buildRandomTrips.bat : Creates random trips for pedestrians, bicycles, motorcycles, passenger vehicles, trucks, buses, and railways.
-* downsizeMap.bat : Creates a SUMO network file from an OSM file and a boundry.
 * createODTrips.bat : Creates SUMO route files for passenger vehicles, motorcycles, buses, and trucks using origin to destination matrices.
 * createOutputFiles.bat : Generates emission outputs, vehicles positions, lane changes, and VTK files.
 * createTLS.bat : Adds traffic lights and their programs to a SUMO network file.
+* downsizeMap.bat : Creates a SUMO network file from an OSM file and a boundry.
 * runWithTraci.py : Runs a SUMO simulation with the traCI program running in the program. This allows parallel integration of custom rerouting.
 * speedTestMontreal.bat : Tests the performance of a SUMO simulation with specific arguments.
 
@@ -146,4 +160,4 @@ Note: All folders and files are located in the 'bin' directory <br/>
 
 * Montreal
 * Lachine
-* Charging Station
+* Charging Test
