@@ -15,6 +15,8 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
   * [Create Map](#-create-map-)
   * [Emissions of Vehicles](#-emissions-of-vehicles-)
   * [Origin to Destination Trips](#-origin-to-destination-trips-)
+  * [Parking Spots](#-Parking-Spots-)
+  * [PostgreSQL](#-Postgresql-)
   * [Performance Test](#-performance-test-)
   * [Stop Signs](#-stop-signs-)
   * [Traffic Light Intersection](#-traffic-light-intersection-)
