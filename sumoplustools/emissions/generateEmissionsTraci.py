@@ -1,18 +1,19 @@
 import os, sys
 import traci
 import sumolib
-import geopandas as gpd
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from sumoplustools.emissions.generateEmissions import EmissionGenerator
 
 class TraciEmissions(EmissionGenerator):
-    def __init__(self, connection : traci.Connection):
-        self.connection = connection
-        self.stepLength = connection.simulation.getDeltaT()
+    def __init__(self, net : sumolib.net.Net):
+        EmissionGenerator.__init__(net)
         self._lastSave = None
 
-    def collectEmissions(self, fromStep, toStep, timeInterval, eTypes):
+    def resetLastSave(self):
+        self._lastSave = None
+
+    def collectEmissions(self, fromStep, toStep, timeInterval, eTypes, connection : traci.Connection, saveRealTime=False):
         """
         Collects the emission data of the current time step, saving it as numpy arrays to a temporary folder.\n
         Only if the current time step falls within fromStep and toStep (not included) is the emission data collected.
@@ -36,33 +37,33 @@ class TraciEmissions(EmissionGenerator):
         """
         def getSecond(arr):
             return arr[1]
-        if self._lastSave is None:
-            self._lastSave = fromStep - self.stepLength
+        if self._lastSave is None or self._lastSave > connection.simulation.getTime():
+            self._lastSave = fromStep - connection.simulation.getDeltaT()
 
         # Check if current time is greater than initial step and less than final step, as well as if vehicles are still in the simulation 
-        if self.connection.simulation.getTime() >= fromStep and self.connection.simulation.getTime() < toStep and self.connection.simulation.getMinExpectedNumber() != 0:
+        if connection.simulation.getTime() >= fromStep and connection.simulation.getTime() < toStep and connection.simulation.getMinExpectedNumber() != 0:
 
             calculated_edges = []
 
             # Loops for each vehicle in the network
-            for vehID in self.connection.vehicle.getIDList():
-                if self.connection.vehicle.getFuelConsumption(vehID) > 0.00:
-                    edgeID = self.connection.lane.getEdgeID(self.connection.vehicle.getLaneID(vehID))
+            for vehID in connection.vehicle.getIDList():
+                if connection.vehicle.getFuelConsumption(vehID) > 0.00:
+                    edgeID = connection.lane.getEdgeID(connection.vehicle.getLaneID(vehID))
                     
                     if not edgeID in calculated_edges:
-                        fuel_output = self.connection.edge.getFuelConsumption(edgeID) * self.stepLength
-                        CO2_output = self.connection.edge.getCO2Emission(edgeID) * self.stepLength
-                        CO_output = self.connection.edge.getCOEmission(edgeID) * self.stepLength
-                        HC_output = self.connection.edge.getHCEmission(edgeID) * self.stepLength
-                        NOx_output = self.connection.edge.getNOxEmission(edgeID) * self.stepLength
-                        PMx_output = self.connection.edge.getPMxEmission(edgeID) * self.stepLength
+                        fuel_output = connection.edge.getFuelConsumption(edgeID) * connection.simulation.getDeltaT()
+                        CO2_output = connection.edge.getCO2Emission(edgeID) * connection.simulation.getDeltaT()
+                        CO_output = connection.edge.getCOEmission(edgeID) * connection.simulation.getDeltaT()
+                        HC_output = connection.edge.getHCEmission(edgeID) * connection.simulation.getDeltaT()
+                        NOx_output = connection.edge.getNOxEmission(edgeID) * connection.simulation.getDeltaT()
+                        PMx_output = connection.edge.getPMxEmission(edgeID) * connection.simulation.getDeltaT()
                         emission_output = {'Fuel':fuel_output, 'CO2':CO2_output, 'CO':CO_output, 'HC':HC_output, 'NOx':NOx_output, 'PMx':PMx_output}
 
                         calculated_edges.append(edgeID)
 
                         if edgeID[0] == ":":
                             # vehicle is on a junction
-                            x, y = self.connection.vehicle.getPosition(vehID)
+                            x, y = connection.vehicle.getPosition(vehID)
                             edges = []
                             radius = 10
                             while len(edges) == 0:
@@ -74,11 +75,38 @@ class TraciEmissions(EmissionGenerator):
 
                         self.addOutputs(self.net, edgeID, emission_output)            
 
-        if self.connection.simulation.getTime() - self._lastSave >= timeInterval:
-            self.saveEmissionArray(eTypes, float(self._lastSave) + self.stepLength)
+        if connection.simulation.getTime() - self._lastSave >= timeInterval:
+            if saveRealTime:
+                self.saveRealTime(connection.simulation.getTime(), fromStep, toStep, timeInterval, eTypes)
+            else:
+                self.saveEmissionArray(eTypes, float(self._lastSave) + connection.simulation.getDeltaT())
             self.resetEmissionArrays(self.net)
-            self._lastSave = self.connection.simulation.getTime()
+            self._lastSave = connection.simulation.getTime()
     
+    def saveRealTime(self, time, fromStep, toStep, timeInterval, eTypes):
+        for eType in eTypes:
+            hr = time // 3600
+            mins = (time % 3600) // 60
+            sec = (time % 3600) % 60
+            fromTime = "%i:%.2i:%.2f" % (hr,mins,sec)
+            
+            time += timeInterval
+            if time > toStep:
+                time = toStep
+            
+            hr = time // 3600
+            mins = (time % 3600) // 60
+            sec = (time % 3600) % 60
+            toTime = "%i:%.2i:%.2f" % (hr,mins,sec)
 
-    def saveEmissions(self, fromStep, toStep, timeInterval, filename, eTypes, template):
-        self.saveDataFrame(fromStep, toStep, timeInterval, filename, eTypes, template)
+            # Do not save time steps of length 0
+            if fromTime == toTime:
+                return
+            
+            # Adds step to table/dataframe
+            stepArr = self.emission_array
+            self.sqlConnection.addColumn('%s-%s' % (fromTime, toTime), stepArr, eType)
+
+    def saveEmissions(self, fromStep, toStep, timeInterval, eTypes, filename=None):
+        self.saveDataFrame(fromStep, toStep, timeInterval, eTypes, filename)
+        self.resetLastSave()

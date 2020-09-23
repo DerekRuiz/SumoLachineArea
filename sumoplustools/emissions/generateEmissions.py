@@ -1,42 +1,43 @@
 import os, sys
-import argparse
 import numpy as np
 from xml.etree import ElementTree as ET
 import sumolib
-import osmnx as ox
 import geopandas as gpd
 from rtree import index
 from shapely.geometry import LineString
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from sumoplustools.emissions import emissionIO as eio
+from sumoplustools.postgresql.psqlObjects import emissionConnection
 
 class EmissionGenerator():
     # Global
-    _MAP_ETYPE_TO_INDEX = {"fuel":0,"co2":1,"co":2,"hc":3,"nox":4,"pmx":5}
+    _MAP_ETYPE_TO_INDEX = {"FUEL":0,"CO2":1,"CO":2,"HC":3,"NOX":4,"PMX":5}
 
     @staticmethod
     def mapEtypeToIndex(eType : str) -> int:
-        return EmissionGenerator._MAP_ETYPE_TO_INDEX[eType.lower()]
+        return EmissionGenerator._MAP_ETYPE_TO_INDEX[eType.upper()]
     
-    def __init__(self, net : sumolib.net.Net, template : gpd.GeoDataFrame):
+    def __init__(self, net : sumolib.net.Net):
+        self.sqlConnection = emissionConnection()
         self.net = net
-        self.dataFrame = template
-        self.dfSize = self.dataFrame.shape[0]
+        self.dataFrameTemplate = self.sqlConnection.getReferenceTable()
         self.initNetToDF()
         self.resetEmissionArrays()
-
+    
+    ## SAVE TO SERVER THEN PULL FROM SERVER ##
     def initNetToDF(self):
         self.mapNetToDF = np.arange(len(self.net.getEdges()))
         # Instantiate index class
-        idx = self.dataFrame.sindex
+        idx = self.dataFrameTemplate.sindex
         
         # Map each edge to a street
+        # Very long to process: ~8.5 mins
         for i, edge in enumerate(net.getEdges()):
             edgeLine = LineString([net.convertXY2LonLat(x,y) for x,y in edge.getShape()])
-            # Test for potential intersection with each feature of the other feature collection
             for closestIndex in idx.nearest(edgeLine.bounds):
                 self.mapNetToDF[i] = closestIndex
+                break
 
     def getEmissionIndex(self, edgeID) -> int:
         try:
@@ -62,22 +63,29 @@ class EmissionGenerator():
             self.emission_array[self.mapEtypeToIndex(eType)][edgeIndex] += emission_outputs[eType]
 
     def resetEmissionArrays(self):
-        self.emission_array = np.zeros((len(self._MAP_ETYPE_TO_INDEX), self.dfSize))
+        self.emission_array = np.zeros((len(self._MAP_ETYPE_TO_INDEX), self.dataFrameTemplate.shape[0]))
 
     def saveEmissionArray(self, eTypes, index):
         for eType in eTypes:
             filename = '%s_%.2f' % (eType, index)
             eio.saveNumpyArray(self.emission_array[self.mapEtypeToIndex(eType)], filename)
 
-    def saveDataFrame(self, fromStep, toStep, timeInterval, eTypes, filename):
-
-        if '.' in filename:
-            filename = os.path.splitext(filename)[0]
+    def saveDataFrame(self, fromStep, toStep, timeInterval, eTypes, filename=None):
+        self.sqlConnection.dropAllTables()
+        # Determine if dataframe will be too large if columns are added per emission type
+        largeDF = len(eio.getFilesInTemp(extension=".npy")) / len(eTypes) >= 5000
+        
         for eType in eTypes:
-            dataFrame = self.dataFrame.copy()
             tempFiles = eio.getFilesInTemp(prefix=eType, extension=".npy")
             if len(tempFiles) == 0:
                 Warning('Cannot save emission type "%s" as no data has been collected for it' % eType)
+
+            # Initialize table/dataframe
+            if largeDF:
+                self.sqlConnection.createTableWithReference(eType)
+            else:
+                dataFrame = self.dataFrameTemplate.copy()
+
             for f in tempFiles:
                 time = float(os.path.splitext(f)[0].split("_")[1])
                 if time < fromStep:
@@ -96,14 +104,30 @@ class EmissionGenerator():
                 mins = (time % 3600) // 60
                 sec = (time % 3600) % 60
                 toTime = "%i:%.2i:%.2f" % (hr,mins,sec)
+
+                # Do not save time steps of length 0
+                if fromTime == toTime:
+                    continue
                 
-                # Adds step to dataframe
+                # Adds step to table/dataframe
                 stepArr = eio.loadNumpyArray(f)
-                dataFrame = dataFrame.join(gpd.pd.DataFrame(stepArr))
-                dataFrame = dataFrame.rename({0: '%s-%s' % (fromTime, toTime)}, axis=1)
-
-            eio.saveDataFrame(dataFrame, '%s_%s' % (filename, eType))
-
+                if largeDF:
+                    self.sqlConnection.addColumn('%s-%s' % (fromTime, toTime), stepArr, eType)
+                else:
+                    dataFrame = dataFrame.join(gpd.pd.DataFrame(stepArr))
+                    dataFrame = dataFrame.rename({0: '%s-%s' % (fromTime, toTime)}, axis=1)
+            
+            if filename:
+                if largeDF:
+                    Warning("Cannot save dataframe with too many columns")
+                else:
+                    if '.' in filename:
+                        filename = os.path.splitext(filename)[0]
+                    eio.saveDataFrame(dataFrame, '%s_%s' % (filename, eType))
+            if not largeDF:
+                dataFrame = gpd.pd.DataFrame(dataFrame.drop(columns='geometry'))
+                self.sqlConnection.saveDataFrame(dataFrame, eType, overide=True)
+            
     def collectEmissions(self, fromStep, toStep, timeInterval, stepLength, eTypes, xmlSource):
         """
         Parses the XML Element Tree iterator and collects the emission data, saving it as numpy arrays to a temporary folder.\n
@@ -202,14 +226,15 @@ class EmissionGenerator():
 
     def close(self):
         eio.removeProjectTempFolder()
+        self.sqlConnection.close()
 
-def generateEmissionDataFrame(net : sumolib.net.Net, template : gpd.GeoDataFrame, fromStep, toStep, timeInterval, stepLength, eTypes, xmlSource, filename):
+def generateEmissionDataFrame(net : sumolib.net.Net, fromStep, toStep, timeInterval, stepLength, eTypes, xmlSource, filename=None):
     """
     Convenience function to create EmissinoGeneration object and call collectEmissions and saveDataFrame methods
     """
-    emissions = EmissionGenerator(net, template)
+    emissions = EmissionGenerator(net)
     emissions.collectEmissions(fromStep=fromTime, toStep=toTime, timeInterval=timeInterval, stepLength=step_length, eTypes=eTypes, xmlSource=xmlIter)
-    emissions.saveDataFrame(fromStep=fromTime, toStep=toTime, timeInterval=timeInterval, eTypes=eTypes, filename=options.output_file)
+    emissions.saveDataFrame(fromStep=fromTime, toStep=toTime, timeInterval=timeInterval, eTypes=eTypes, filename=filename)
     emissions.close()
 
 def getFirstEmissionTime(xmlFile) -> float:
@@ -233,23 +258,21 @@ def getStepLength(xmlFile) -> float:
     return 0.0
 
 if __name__ == "__main__":
+    import argparse
     
     def fillOptions(argParser):
-        argParser.add_argument("-osm", "--osm-file", 
-                                metavar="FILE", required=True,
-                                help="Use FILE to create GeoDataFrame to be saved (mandatory)")
         argParser.add_argument("-n", "--net-file", 
                                 metavar="FILE", required=True,
                                 help="read SUMO network from FILE (mandatory)")
         argParser.add_argument("-e", "--emission-file",
                                 metavar="FILE", required=True,
                                 help="use FILE to populate data using XML (mandatory)")
-        argParser.add_argument("-o", "--output-file", 
-                                metavar="FILE", required=True,
-                                help="write emissions with prefix to FILE (mandatory)")
         argParser.add_argument("-t", "--emission-types", 
                                 type=str, metavar='STR[,STR]*', required=True,
                                 help="the emission types that will be collected and saved. Seperate types with a comma (mandatory)")
+        argParser.add_argument("-o", "--output-file", 
+                                metavar="FILE",
+                                help="save emissions with prefix to FILE")
         argParser.add_argument("-s", "--start-time",
                                 metavar='INT[-INT-INT]',
                                 help="initial time that data is collected from. Can be in seconds or with format of 'hr-min-sec'. Starts at begining if omitted")
@@ -272,15 +295,6 @@ if __name__ == "__main__":
         return argParser.parse_args(args), argParser
     
     options, argParser = parse_args()
-    
-    # Set OSM file
-    fileType = eio.getOsmFileType(options.osm_file)
-    if fileType is None:
-        argParser.error('osm file is not a correct file type. Valid types: .osm, .shp, .geojson, .gpkg')
-    elif fileType == "osm":
-        streets_gdf = gpd.GeoDataFrame(ox.graph_to_gdfs(ox.graph_from_xml(options.osm_file))[1])
-    else:
-       streets_gdf = gpd.read_file(options.osm_file)
 
     # Set net file
     try:
@@ -292,7 +306,7 @@ if __name__ == "__main__":
     eTypes = options.emission_types.split(",")
     for eType in eTypes:
         try:
-            EmissionGenerator._MAP_ETYPE_TO_INDEX[eType.lower()]
+            EmissionGenerator.mapEtypeToIndex(eType)
         except KeyError:
             argParser.error('emission type of "%s" is not a valid emission' % str(eType))
     try:
@@ -363,7 +377,7 @@ if __name__ == "__main__":
     if timeInterval != np.inf and timeInterval % step_length != 0:
         argParser.error('cannot have a time interval of "%.2f" if the time between steps is %.2f' % (timeInterval, step_length))
     
-    emissions = EmissionGenerator(net, streets_gdf)
+    emissions = EmissionGenerator(net)
 
     emissions.collectEmissions(fromStep=fromTime, toStep=toTime, timeInterval=timeInterval, stepLength=step_length, eTypes=eTypes, xmlSource=xmlIter)
 
