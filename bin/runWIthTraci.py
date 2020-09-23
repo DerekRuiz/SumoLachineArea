@@ -28,9 +28,6 @@ def fillOptions(argParser):
     emissionGroup.add_argument("-e", "--generate-emissions",
                             action='store_true', default=False,
                             help="generate emission outputs")
-    emissionGroup.add_argument("--osm-file", 
-                            metavar="FILE", required='--generate-emissions' in sys.argv or '-e' in sys.argv,
-                            help="use FILE to create GeoDataFrame to be saved (mandatory)")
     emissionGroup.add_argument("--net-file", 
                             metavar="FILE", required='--generate-emissions' in sys.argv or '-e' in sys.argv,
                             help="read SUMO network from FILE (mandatory)")
@@ -40,6 +37,9 @@ def fillOptions(argParser):
     emissionGroup.add_argument("--emission-types", 
                             type=str, metavar='STR[,STR]*', required='--generate-emissions' in sys.argv or '-e' in sys.argv,
                             help="the emission types that will be collected and saved. Seperate types with a comma (mandatory)")
+    emissionGroup.add_argument("--osm-file", 
+                            metavar="FILE",
+                            help="use FILE to create GeoDataFrame to be saved")
     emissionGroup.add_argument("--emission-start-time",
                             metavar='INT[-INT-INT]',
                             help="initial time that data is collected from. Can be in seconds or with format of 'hr-min-sec'. Starts at begining if omitted")
