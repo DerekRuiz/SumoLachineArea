@@ -90,7 +90,7 @@ Contains the following files:
 * generateEmissionsTraci.py
 
 emissionIO.py : Connects with input / output methods dealing with emissions. <br/>
-generateEmissions.py : Generate emission data from a SUMO simulation and save the information to a geospatial database. <br/>
+generateEmissions.py : Generate emission data per street and save the information to a geospatial database. <br/>
 generateEmissionsTraci.py : Use TraCI to generates emission data concurrently with the given simulation.
 
 <label><h3> Origin to Destination Trips </h3></label>
