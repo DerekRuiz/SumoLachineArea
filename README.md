@@ -82,7 +82,7 @@ addOSM.py : Adds an OSM tag to the end of an OSM file if missing. <br/>
 createPoly.py : Transforms a geoJSON to a boundary polygon file.
 
 <label><h3> Emissions of Vehicles </h3></label>
-Deals with emission outputs generated from vehicles in the simulation.
+Deals with emission outputs generated from vehicles in the simulation. For more information how to use these tools, refer to the [wiki](../../wiki/Emission-Tools)
 
 Contains the following files:
 * emissionIO.py
