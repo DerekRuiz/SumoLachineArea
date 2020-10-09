@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 08/26/20 15:30:26 by Eclipse SUMO netedit Version 1.6.0
+<!-- generated on 09/24/20 16:21:15 by Eclipse SUMO netedit Version 1.6.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
@@ -61,12 +61,18 @@
         <param key="stoppingTreshold" value="0.1"/>
         <param key="vehicleMass" value="3000"/>
     </vType>
-    <route edges="422420305#0 -422420305#0 526927235#0 526927235#1 526927235#2 526927235#3 25166324#0 25166324#1 25166324#2 -120486714#10 -120486714#9 -120486714#8 -120486714#7 -120486714#6 -120486714#5 -120486714#4 -120486714#3 -120486714#2 -120486714#1 -120486714#0 -454844521 -454844520 -454271342#5 -454271342#4 -454271342#3 -454271342#2 -454271342#1 -454271342#0 -483203652#3 -483203652#2 25163002#0 25163002#1 25163002#2 25163002#3 -25162687#3 25162914#0 25162914#1 -25162965#0 -25162965#7 -25162919#2 25162919#2" color="yellow" id="route_0"/>
+    <route edges="454844521 120486714#0 120486714#1" color="yellow" id="route_0"/>
     <route edges="422420305#13 -25378170#2 -25378170#1 -25378170#0 25167563#3 -25167484#0 -555505970#12 -555505970#11 -555505970#10 -555505970#9 -555505970#8 -555505970#7 -555505970#6 -555505970#5 -555505970#4 -555505970#3 -555505970#2 -555505970#1 -555505970#0 526927235#2 526927235#3 25166324#0 25166324#1 25166324#2 25166320 555505978#8 555505980" color="yellow" id="route_1"/>
     <route edges="361993052 361993055#0 361993055#1 198565955 198565956 -25113353#2 -120486714#15 -120486714#14 -120486714#13 -120486714#12 -120486714#11 -25166324#2 -25166324#1 -25166324#0 -526927235#3 -526927235#2 -526927235#1 -526927235#0 25378314 48685115 48685117#0 48685117#1 48685117#2 18373385#0 18373385#1 18373385#2 18373385#3 -18373385#3" color="yellow" id="route_2"/>
-    <vehicle id="vehicle_0" type="vType_ELEC" depart="0.00" route="route_0"/>
+    <route edges="422420305#5 422420305#6 422420305#7" color="yellow" id="route_3"/>
+    <vehicle id="vehicle_0" type="vType_ELEC" depart="0.00" route="route_0">
+        <stop chargingStation="chargingStation_120486714#0_0_4" duration="60.00" parking="1"/>
+    </vehicle>
+    <vehicle id="vehicle_1" depart="0.00" route="route_0"/>
+    <vehicle id="vehicle_6" type="vType_ELEC" depart="0.00" route="route_3">
+        <stop chargingStation="chargingStation_422420305#6_0_1" duration="60.00" parking="1"/>
+    </vehicle>
     <vehicle id="vehicle_4" type="vType_ELEC" depart="10.00" route="route_1"/>
-    <vehicle id="vehicle_1" type="vType_ELEC" depart="30.00" route="route_0"/>
     <vehicle id="vehicle_2" type="vType_ELEC" depart="30.00" route="route_2"/>
     <vehicle id="vehicle_3" type="vType_ELEC" depart="50.00" route="route_2"/>
     <vehicle id="vehicle_5" type="vType_ELEC" depart="60.00" route="route_1"/>

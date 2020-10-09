@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 10/08/20 11:02:01 by Eclipse SUMO netedit Version 1.6.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingTest\test.net.xml"/>
+    </input>
+
+    <output>
+        <output-file value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingTest\test.net.xml"/>
+        <output.street-names value="true"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="false"/>
+    </processing>
+
+    <junctions>
+        <no-internal-links value="false"/>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.5"/>
+        <rectangular-lane-cut value="false"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="true"/>
+    </pedestrian>
+
+    <netedit>
+        <route-files value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingTest\bus.rou.xml"/>
+    </netedit>
+
+    <report>
+        <aggregate-warnings value="5"/>
+    </report>
+
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="bus" vClass="bus"/>
+    <route edges="361991757#1 361991757#2 361991757#3 361991757#4 361991757#5 361991757#6 361991757#7 361991757#8 361991757#9 361991757#10 361991757#11 361991757#12 499060510#0 499060510#1 499060510#2 -25166289#3 -25166289#2 822252084#0 822252084#1 -25166364#1 -25166364#0 -120486714#11 -120486714#10" color="yellow" id="route_0"/>
+    <person id="person_0" depart="0.00">
+        <ride from="361991757#2" busStop="busStop_361991757#5_0_3"/>
+    </person>
+    <vehicle id="vehicle_0" type="bus" depart="0.00" line="first" route="route_0">
+        <param key="lat" value="13213.21"/>
+        <stop busStop="busStop_361991757#2_0_2" duration="20.00" parking="1"/>
+        <stop busStop="busStop_361991757#5_0_3" duration="20.00" parking="1"/>
+        <stop busStop="busStop_361991757#12_0_4" duration="20.00" parking="1"/>
+        <stop busStop="busStop_-25166289#3_0_5" duration="20.00" parking="1"/>
+        <stop busStop="busStop_822252084#1_0_6" duration="20.00" parking="1"/>
+        <stop busStop="busStop_-25166364#1_0_7" duration="20.00" parking="1"/>
+        <stop busStop="busStop_-120486714#11_0_8" duration="20.00" parking="1"/>
+    </vehicle>
+</routes>

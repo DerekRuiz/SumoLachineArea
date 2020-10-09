@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 08/26/20 15:26:35 by Eclipse SUMO netedit Version 1.6.0
+<!-- generated on 09/24/20 16:40:04 by Eclipse SUMO netedit Version 1.6.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
 
     <input>
@@ -20,6 +20,7 @@
     </processing>
 
     <junctions>
+        <no-internal-links value="false"/>
         <no-turnarounds value="true"/>
         <junctions.corner-detail value="5"/>
         <junctions.limit-turn-speed value="5.5"/>
@@ -32,6 +33,7 @@
 
     <netedit>
         <additional-files value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingTest\charge.add.xml"/>
+        <route-files value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingTest\evehicle.rou.xml"/>
     </netedit>
 
     <report>
@@ -42,8 +44,19 @@
 -->
 
 <additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+    <containerStop id="containerStop_-483203652#1_0_0" lane="-483203652#1_0" startPos="0.07" endPos="10.07"/>
+    <parkingArea id="parkingArea_454271342#2_0_0" lane="454271342#2_0" startPos="55.42" endPos="65.42" roadsideCapacity="1"/>
+    <parkingArea id="parkingArea_454271342#2_0_3" lane="454271342#2_0" startPos="23.71" endPos="33.71" onRoad="1"/>
+    <parkingArea id="parkingArea_454271342#2_0_4" lane="454271342#2_0" startPos="11.57" endPos="21.57">
+        <param key="start" value="600"/>
+    </parkingArea>
+    <parkingArea id="parkingArea_454271342#3_0_2" lane="454271342#3_0" startPos="34.76" endPos="34.86" roadsideCapacity="1" friendlyPos="1"/>
+    <parkingArea id="parkingArea_454271342#3_1_1" lane="454271342#3_1" roadsideCapacity="1000"/>
+    <chargingStation id="chargingStation_120486714#0_0_4" lane="120486714#0_0" startPos="40.85" endPos="50.85"/>
     <chargingStation id="chargingStation_25123763#7_0_3" lane="25123763#7_0" startPos="200.32" endPos="211.32" power="36000.00" efficiency="1.00"/>
     <chargingStation id="chargingStation_25166951_0_2" lane="25166951_0" startPos="62.71" endPos="73.71" power="36000.00" efficiency="1.00"/>
     <chargingStation id="chargingStation_422420305#6_0_1" lane="422420305#6_0" startPos="61.38" endPos="71.38" power="36000.00" efficiency="1.00"/>
+    <chargingStation id="chargingStation_454271342#2_0_0" lane="454271342#2_0" startPos="89.69" endPos="99.69"/>
+    <chargingStation id="chargingStation_454271342#2_0_1" lane="454271342#2_0" startPos="89.69" endPos="99.69"/>
     <chargingStation id="chargingStation_566210472#8_0_1" lane="566210472#8_0" startPos="33.41" endPos="44.41" power="36000.00" efficiency="1.00"/>
 </additional>

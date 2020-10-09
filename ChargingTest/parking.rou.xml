@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 09/24/20 16:09:21 by Eclipse SUMO netedit Version 1.6.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingTest\test.net.xml"/>
+    </input>
+
+    <output>
+        <output-file value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingTest\test.net.xml"/>
+        <output.street-names value="true"/>
+    </output>
+
+    <processing>
+        <geometry.min-radius.fix.railways value="false"/>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <lefthand value="false"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.5"/>
+        <rectangular-lane-cut value="false"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="true"/>
+    </pedestrian>
+
+    <netedit>
+        <additional-files value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingTest\parking.add.xml"/>
+        <route-files value="C:\Users\epicb\Documents\GitHub\SumoLachineArea\ChargingTest\parking.rou.xml"/>
+    </netedit>
+
+    <report>
+        <aggregate-warnings value="5"/>
+    </report>
+
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <route edges="454271342#1 454271342#2 454271342#3 454271342#4 454271342#5 454844520 454844521 120486714#0 120486714#1 120486714#2 120486714#3 120486714#4 120486714#5 120486714#6 120486714#7 120486714#8 120486714#9 120486714#10 120486714#11 120486714#12 120486714#13 120486714#14 120486714#15 120486714#16" color="yellow" id="route_0"/>
+    <route edges="454271342#2 454271342#3 454271342#4 454271342#5 454844520 25163215#0 -361991757#4 25168113" color="yellow" id="route_1"/>
+    <vehicle id="vehicle_0" depart="0.00" route="route_0">
+        <stop lane="454271342#1_0" startPos="21.88" endPos="31.88" duration="5.00" parking="1"/>
+        <stop chargingStation="chargingStation_454271342#2_0_0" duration="60.00" parking="1"/>
+    </vehicle>
+    <vehicle id="vehicle_7" depart="0.00" route="route_1">
+        <stop parkingArea="parkingArea_454271342#3_1_1" duration="60.00"/>
+    </vehicle>
+    <vehicle id="vehicle_8" depart="0.00" route="route_1">
+        <stop parkingArea="parkingArea_454271342#3_0_2" duration="60.00"/>
+        <stop parkingArea="parkingArea_454271342#3_0_2" duration="60.00"/>
+    </vehicle>
+    <vehicle id="vehicle_1" depart="5.00" route="route_0">
+        <stop lane="454271342#1_0" startPos="46.59" endPos="56.59" duration="5.00" parking="1"/>
+        <stop chargingStation="chargingStation_454271342#2_0_0" duration="60.00" parking="1"/>
+    </vehicle>
+    <vehicle id="vehicle_2" depart="10.00" route="route_0"/>
+    <vehicle id="vehicle_3" depart="20.00" route="route_0"/>
+    <vehicle id="vehicle_4" depart="30.00" route="route_0">
+        <stop parkingArea="parkingArea_454271342#2_0_0" duration="60.00" parking="1"/>
+    </vehicle>
+    <vehicle id="vehicle_5" depart="40.00" route="route_0">
+        <stop parkingArea="parkingArea_454271342#2_0_0" duration="10.00"/>
+    </vehicle>
+    <vehicle id="vehicle_6" depart="50.00" route="route_0">
+        <stop parkingArea="parkingArea_454271342#2_0_0" duration="10.00" parking="1"/>
+    </vehicle>
+</routes>
