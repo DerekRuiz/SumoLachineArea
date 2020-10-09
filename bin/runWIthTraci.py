@@ -10,7 +10,6 @@ import geopandas as gpd
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from sumoplustools.chargingstations.routeToCharge import RerouteChargingDomain
 from sumoplustools.emissions.generateEmissionsTraci import TraciEmissions
-from sumoplustools.emissions import emissionIO as eio 
 
 def fillOptions(argParser):
     generalGroup = argParser.add_argument_group("General")
@@ -31,30 +30,27 @@ def fillOptions(argParser):
     emissionGroup.add_argument("--net-file", 
                             metavar="FILE", required='--generate-emissions' in sys.argv or '-e' in sys.argv,
                             help="read SUMO network from FILE (mandatory)")
-    emissionGroup.add_argument("--emission-output-file", 
-                            metavar="FILE", required='--generate-emissions' in sys.argv or '-e' in sys.argv,
-                            help="write emissions with prefix to FILE (mandatory)")
     emissionGroup.add_argument("--emission-types", 
                             type=str, metavar='STR[,STR]*', required='--generate-emissions' in sys.argv or '-e' in sys.argv,
                             help="the emission types that will be collected and saved. Seperate types with a comma (mandatory)")
-    emissionGroup.add_argument("--osm-file", 
+    emissionGroup.add_argument("--emission-output-file", 
                             metavar="FILE",
-                            help="use FILE to create GeoDataFrame to be saved")
+                            help="write emissions with prefix to FILE (mandatory)")
     emissionGroup.add_argument("--emission-start-time",
-                            metavar='INT[-INT-INT]',
-                            help="initial time that data is collected from. Can be in seconds or with format of 'hr-min-sec'. Starts at begining if omitted")
+                            metavar='INT[:INT:INT]',
+                            help="initial time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Starts at begining if omitted")
     emissionGroup.add_argument("--emission-finish-time",
-                            metavar='INT[-INT-INT]',
-                            help="last time that data is collected from. Can be in seconds or with format of 'hr-min-sec'. Terminates 1 second after start if omitted")
+                            metavar='INT[:INT:INT]',
+                            help="last time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Terminates 1 second after start if omitted")
     emissionGroup.add_argument("--emission-duration",
-                            metavar='INT[-INT-INT]',
-                            help="amount of time that data is collected from. Can be in seconds or with format of 'hr-min-sec'. Terminates after 1 second has elapsed if omitted. Has priority over --finish-time")
+                            metavar='INT[:INT:INT]',
+                            help="amount of time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Terminates after 1 second has elapsed if omitted. Has priority over --finish-time")
     emissionGroup.add_argument("--emission-go-to-end",
                             action='store_true', dest='toEnd', default=False,
                             help="collect data until the end of file or simulation. Has priority over --duration")
     emissionGroup.add_argument("--emission-time-interval",
-                            metavar='INT[-INT-INT]',
-                            help="the number of step in an interval. Can be in seconds or with format of 'hr-min-sec'. Interval of total runtime if omitted")
+                            metavar='INT[:INT:INT]',
+                            help="the number of step in an interval. Can be in seconds or with format of 'hr:min:sec'. Interval of total runtime if omitted")
 
     batteryGroup = argParser.add_argument_group("Battery Vehicles")
     batteryGroup.add_argument("-r", "--reroute-charging",
@@ -104,14 +100,6 @@ if __name__ == "__main__":
         rcd = RerouteChargingDomain(sumocfgFile, connection)
     
     if options.generate_emissions:
-        # Set OSM file
-        fileType = eio.getOsmFileType(options.osm_file)
-        if fileType is None:
-            argParser.error('osm file is not a correct file type. Valid types: .osm, .shp, .geojson, .gpkg')
-        elif fileType == "osm":
-            dataFrame = gpd.GeoDataFrame(ox.graph_to_gdfs(ox.graph_from_xml(options.osm_file))[1])
-        else:
-            dataFrame = gpd.read_file(options.osm_file)
         
         # Set net file
         try:
@@ -136,7 +124,7 @@ if __name__ == "__main__":
                 fromTime = float(options.start_time)
             except ValueError:
                 try:
-                    split = options.start_time.split('-')
+                    split = options.start_time.split(':')
                     fromTime = (int(split[0]) * 3600) + (int(split[1]) * 60) + float(split[2])
                 except IndexError:
                     argParser.error("--start-time is not in the correct format")
@@ -155,7 +143,7 @@ if __name__ == "__main__":
                 duration = float(options.duration)
             except ValueError:
                 try:
-                    split = options.duration.split('-')
+                    split = options.duration.split(':')
                     duration = (int(split[0]) * 3600) + (int(split[1]) * 60) + float(split[2])
                 except IndexError:
                     argParser.error("--duration is not in the correct format")
@@ -166,7 +154,7 @@ if __name__ == "__main__":
                 toTime = float(options.finish_time)
             except ValueError:
                 try:
-                    split = options.finish_time.split('-')
+                    split = options.finish_time.split(':')
                     toTime = (int(split[0]) * 3600) + (int(split[1]) * 60) + float(split[2])
                 except IndexError:
                     argParser.error("--finish-time is not in the correct format")
@@ -179,7 +167,7 @@ if __name__ == "__main__":
                 timeInterval = int(options.time_interval)
             except ValueError:
                 try:
-                    split = options.time_interval.split('-')
+                    split = options.time_interval.split(':')
                     timeInterval = (int(split[0]) * 3600) + (int(split[1]) * 60) + int(split[2])
                 except IndexError:
                     argParser.error("--time-interval is not in the correct format")
@@ -202,7 +190,7 @@ if __name__ == "__main__":
 
         # Validate Emission Inputs Complete #
 
-        t_emissions = TraciEmissions(connection, net, dataFrame)
+        t_emissions = TraciEmissions(net)
 
     # Main loop through the simulation #
     while connection.simulation.getMinExpectedNumber() > 0:
@@ -212,8 +200,11 @@ if __name__ == "__main__":
             rcd.rerouteVehicles(startRerouteThreshold=options.reroute_start_threshold, finishRerouteThreshold=options.reroute_finish_threshold, randomThreshold=options.reroute_random_threshold)
         
         if options.generate_emissions:
-            t_emissions.collectEmissions(fromStep=fromTime, toStep=toTime, timeInterval=timeInterval, eTypes=eTypes)
+            t_emissions.collectEmissions(fromStep=fromTime, toStep=toTime, timeInterval=timeInterval, eTypes=eTypes, connection=connection)
     
+    if options.emission_real_time_save:
+        t_emissions.saveDataFrame(fromStep=fromTime, toStep=toTime, timeInterval=timeInterval, eTypes=eType, filename=options.emission_output_file)
+
     # Close the simulation
     try:
         connection.close()
