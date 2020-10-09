@@ -48,7 +48,8 @@ class TraciEmissions(EmissionGenerator):
             # Loops for each vehicle in the network
             for vehID in connection.vehicle.getIDList():
                 if connection.vehicle.getFuelConsumption(vehID) > 0.00:
-                    edgeID = connection.lane.getEdgeID(connection.vehicle.getLaneID(vehID))
+                    edgeID = connection.vehicle.getRoadID(vehID)
+                    #edgeID = connection.lane.getEdgeID(connection.vehicle.getLaneID(vehID))
                     
                     if not edgeID in calculated_edges:
                         fuel_output = connection.edge.getFuelConsumption(edgeID) * connection.simulation.getDeltaT()
