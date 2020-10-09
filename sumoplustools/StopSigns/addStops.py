@@ -6,12 +6,12 @@ _duration = 1.0
 _start_pos = -1.0
 _end_pos = -1.0
 
-def stopAtEdge(net : sumolib.net.Net, edgeID : str, vehicle_type : str):
+def stopAtEdge(net : sumolib.net.Net, edgeID : str, vehicle_class_type : str):
     noStops = ["dead_end","traffic_light"]
     # yesStops = ["rail_crossings","priority","right_before_left"]
     edge = net.getEdge(edgeID)
     toJunction = edge.getToNode()
-    if not edge.allows(vehicle_type):
+    if not edge.allows(vehicle_class_type):
         return False
     if toJunction.getType() in noStops:
         return False
