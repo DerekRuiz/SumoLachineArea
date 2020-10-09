@@ -47,19 +47,33 @@ if __name__ == "__main__":
     for _, row in df.iterrows():
         lon, lat = row['long'], row['lat']
         x, y = net.convertLonLat2XY(lon,lat)
-        if not boundary.contains(polygon.Point(x,y)):
-            continue
+        # Check each surrounding edge for nodes
+        for edge in net.getNeighboringEdge(x, y, radius=100):
+            # Check if the from node contains the traffic light
+            node = edge.getFromNode()
+            if node:
+                shape = node.getShape()
+                if len(shape) < 3:
+                    continue
 
-        for node in net.getNodes():
-            node_id = node.getID()
-            shape = node.getShape()
-            if len(shape) < 3:
-                continue
+                node_id = node.getID()
+                if polygon.Polygon(shape).contains(polygon.Point(x,y)):
+                    elem = ET.SubElement(topElem,'node')
+                    elem.attrib = {'id':node_id, 'type':'traffic_light'}
+                    break
 
-            if polygon.Polygon(shape).contains(polygon.Point(x,y)):
-                elem = ET.SubElement(topElem,'node')
-                elem.attrib = {'id':node_id, 'type':'traffic_light'}
-                break
+            # Check if the to node contains the traffic light 
+            node = edge.getToNode()
+            if node:
+                shape = node.getShape()
+                if len(shape) < 3:
+                    continue
+
+                node_id = node.getID()
+                if polygon.Polygon(shape).contains(polygon.Point(x,y)):
+                    elem = ET.SubElement(topElem,'node')
+                    elem.attrib = {'id':node_id, 'type':'traffic_light'}
+                    break
 
     tree = ET.ElementTree(topElem)
     tree.write(options.node_output_file)
