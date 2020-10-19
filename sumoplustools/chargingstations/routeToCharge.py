@@ -60,13 +60,13 @@ class RerouteChargingDomain():
         return chargingStationElems
 
 
-    def getChargingStationIDs(self) -> list(str):
+    def getChargingStationIDs(self) -> list:
         return [elem.get("id") for elem in self.chargingElems]
 
     def getChargingStationLanes(self) -> [(str, str)]:
         return [(elem.get("id"), elem.get("lane")) for elem in self.chargingElems]
     
-    def getOccupiedChargingStations(self) -> list(str):
+    def getOccupiedChargingStations(self) -> list:
         chargingStations = []
         for vehicle in list(self._vehiclesRerouted.values()):
             chargingStations += [vehicle['chargingStation']]

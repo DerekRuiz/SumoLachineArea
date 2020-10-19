@@ -8,7 +8,9 @@ from shapely.geometry import LineString
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from sumoplustools.emissions import emissionIO as eio
+from sumoplustools.emissions import displayEmissions
 from sumoplustools.postgresql.psqlObjects import emissionConnection
+from sumoplustools import createElement
 
 class EmissionGenerator():
     # Global
@@ -21,29 +23,9 @@ class EmissionGenerator():
     def __init__(self, net : sumolib.net.Net):
         self.sqlConnection = emissionConnection()
         self.net = net
-        self.dataFrameTemplate = self.sqlConnection.getReferenceTable()
-        self.initNetToDF()
+        self.dataFrameTemplate = self.sqlConnection.getReferenceDF()
+        self.mapNetToDF = self.sqlConnection.getNetToDFMap()
         self.resetEmissionArrays()
-    
-    ## SAVE TO SERVER THEN PULL FROM SERVER ##
-    def initNetToDF(self):
-        self.mapNetToDF = np.arange(len(self.net.getEdges()))
-        # Instantiate index class
-        idx = self.dataFrameTemplate.sindex
-        
-        # Map each edge to a street
-        # Very long to process: ~8.5 mins
-        for i, edge in enumerate(net.getEdges()):
-            edgeLine = LineString([net.convertXY2LonLat(x,y) for x,y in edge.getShape()])
-            for closestIndex in idx.nearest(edgeLine.bounds):
-                self.mapNetToDF[i] = closestIndex
-                break
-
-    def getEmissionIndex(self, edgeID) -> int:
-        try:
-            return self.mapNetToDF[self.net.getEdges().index(self.net.getEdge(edgeID))]
-        except:
-            raise Exception('No network edge with id "%s" in net file' % edgeID)
 
     def addOutputs(self, edgeID, emission_outputs):
         """
@@ -57,7 +39,10 @@ class EmissionGenerator():
         emission_outputs : dict
             Names of outputs associated with their numerical value
         """
-        edgeIndex = self.getEmissionIndex(edgeID)
+        try:
+            edgeIndex = self.mapNetToDF[edgeID]
+        except KeyError:
+            raise Exception('No network edge with id "%s" in net file' % edgeID)
         
         for eType in emission_outputs:
             self.emission_array[self.mapEtypeToIndex(eType)][edgeIndex] += emission_outputs[eType]
@@ -70,20 +55,25 @@ class EmissionGenerator():
             filename = '%s_%.2f' % (eType, index)
             eio.saveNumpyArray(self.emission_array[self.mapEtypeToIndex(eType)], filename)
 
-    def saveDataFrame(self, fromStep, toStep, timeInterval, eTypes, filename=None):
-        self.sqlConnection.dropAllTables()
+    def resetSavedEmissions(self, reference=True):
+        self.sqlConnection.dropAll_eTables()
+        self.sqlConnection.createAll_eTables(reference=reference)
+
+    def saveDataFrame(self, fromStep, toStep, timeInterval, eTypes, filename=None, toSQL=True):
+        if toSQL:
+            self.resetSavedEmissions()
+
         # Determine if dataframe will be too large if columns are added per emission type
-        largeDF = len(eio.getFilesInTemp(extension=".npy")) / len(eTypes) >= 5000
+        largeDF = len(eio.getFilesInTemp(extension=".npy")) / len(eTypes) >= 1000
         
         for eType in eTypes:
-            tempFiles = eio.getFilesInTemp(prefix=eType, extension=".npy")
+            tempFiles = eio.getFilesInTemp(prefix='%s_' % eType, extension=".npy")
             if len(tempFiles) == 0:
                 Warning('Cannot save emission type "%s" as no data has been collected for it' % eType)
+                continue
 
             # Initialize table/dataframe
-            if largeDF:
-                self.sqlConnection.createTableWithReference(eType)
-            else:
+            if not largeDF:
                 dataFrame = self.dataFrameTemplate.copy()
 
             for f in tempFiles:
@@ -112,21 +102,23 @@ class EmissionGenerator():
                 # Adds step to table/dataframe
                 stepArr = eio.loadNumpyArray(f)
                 if largeDF:
-                    self.sqlConnection.addColumn('%s-%s' % (fromTime, toTime), stepArr, eType)
+                    if toSQL:
+                        self.sqlConnection.addColumn('%s-%s' % (fromTime, toTime), stepArr, eType)
                 else:
                     dataFrame = dataFrame.join(gpd.pd.DataFrame(stepArr))
                     dataFrame = dataFrame.rename({0: '%s-%s' % (fromTime, toTime)}, axis=1)
             
-            if filename:
-                if largeDF:
+            if largeDF:
+                if filename:
                     Warning("Cannot save dataframe with too many columns")
-                else:
-                    if '.' in filename:
-                        filename = os.path.splitext(filename)[0]
-                    eio.saveDataFrame(dataFrame, '%s_%s' % (filename, eType))
-            if not largeDF:
-                dataFrame = gpd.pd.DataFrame(dataFrame.drop(columns='geometry'))
-                self.sqlConnection.saveDataFrame(dataFrame, eType, overide=True)
+            else:
+                if '.' in filename:
+                    filename = os.path.splitext(filename)[0]
+                eio.saveDataFrame(dataFrame, '%s_%s' % (filename, eType))
+                if toSQL:
+                    dataFrame = gpd.pd.DataFrame(dataFrame.drop('geometry', axis=1))
+                    self.sqlConnection.saveDataFrame(dataFrame, eType, overide=True)
+
             
     def collectEmissions(self, fromStep, toStep, timeInterval, stepLength, eTypes, xmlSource):
         """
@@ -160,7 +152,7 @@ class EmissionGenerator():
             return arr[1]
         
         self.resetEmissionArrays()
-        time = lastTime = fromStep - stepLength
+        time = lastTime = fromStep
         
         for _, elem in xmlSource:
             if elem.tag != "timestep":
@@ -174,6 +166,12 @@ class EmissionGenerator():
             if time >= toStep:
                 break
             
+            if time - lastTime >= timeInterval:
+                ## SAVE TO SERVER ##
+                self.saveEmissionArray(eTypes, lastTime)
+                self.resetEmissionArrays()
+                lastTime = time
+
             for vehicle in elem.findall('vehicle'):
                 fuel_output = float(vehicle.attrib["fuel"]) * stepLength
 
@@ -206,11 +204,6 @@ class EmissionGenerator():
                         
                     self.addOutputs(edgeID, emission_output)
 
-            if time - lastTime >= timeInterval:
-                ## SAVE TO SERVER ##
-                self.saveEmissionArray(eTypes, lastTime + stepLength)
-                self.resetEmissionArrays()
-                lastTime = time
 
             elem.clear()
             del elem
@@ -221,8 +214,8 @@ class EmissionGenerator():
         
         # Source does not have enough steps to complete an interval, so the partial interval is saved
         if time != lastTime and time <= toStep:
-                ## SAVE TO SERVER ##
-                self.saveEmissionArray(eTypes, lastTime + stepLength)
+            ## SAVE TO SERVER ##
+            self.saveEmissionArray(eTypes, lastTime)
 
     def close(self):
         eio.removeProjectTempFolder()
@@ -274,33 +267,42 @@ if __name__ == "__main__":
                                 metavar="FILE",
                                 help="save emissions with prefix to FILE")
         argParser.add_argument("-s", "--start-time",
-                                metavar='INT[-INT-INT]',
-                                help="initial time that data is collected from. Can be in seconds or with format of 'hr-min-sec'. Starts at begining if omitted")
+                                metavar='INT[:INT:INT]',
+                                help="initial time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Starts at begining if omitted")
         argParser.add_argument("-f", "--finish-time",
-                                metavar='INT[-INT-INT]',
-                                help="last time that data is collected from. Can be in seconds or with format of 'hr-min-sec'. Terminates 1 second after start if omitted")
+                                metavar='INT[:INT:INT]',
+                                help="last time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Terminates 1 second after start if omitted")
         argParser.add_argument("-d", "--duration",
-                                metavar='INT[-INT-INT]',
-                                help="amount of time that data is collected from. Can be in seconds or with format of 'hr-min-sec'. Terminates after 1 second has elapsed if omitted. Has priority over --finish-time")
+                                metavar='INT[:INT:INT]',
+                                help="amount of time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Terminates after 1 second has elapsed if omitted. Has priority over --finish-time")
         argParser.add_argument("-g", "--go-to-end",
                                 action='store_true', dest='toEnd', default=False,
                                 help="collect data until the end of file or simulation. Has priority over --duration")
         argParser.add_argument("-i", "--time-interval",
-                                metavar='INT[-INT-INT]',
-                                help="the number of step in an interval. Can be in seconds or with format of 'hr-min-sec'. Time interval equal to the total runtime of the simulation if omitted")
+                                metavar='INT[:INT:INT]',
+                                help="save the emissions every interval. Can be in seconds or with format of 'hr:min:sec'. Interval equals total runtime if omitted")
+        argParser.add_argument("-v", "--verbose",
+                                action='store_true', default=False,
+                                help="gives a description of the current task")
 
     def parse_args(args=None):
-        argParser = argparse.ArgumentParser(description="Generate emissions and save them to an XML")
+        argParser = argparse.ArgumentParser(description="Generate emissions and save them to a database")
         fillOptions(argParser)
         return argParser.parse_args(args), argParser
     
     options, argParser = parse_args()
+    if options.verbose:
+        createElement.addVerboseSteps(["reading SUMO network file","validating inputs","establishing connection to database","collecting emissions","saving emissions"])
 
+    if options.verbose:
+        createElement.writeToConsole()
     # Set net file
     try:
         net = sumolib.net.readNet(options.net_file)
     except ValueError:
         argParser.error('could not read "%s" as a SUMO network file' % os.path.abspath(options.net_file))
+    if options.verbose:
+        createElement.writeToConsole(done=True)
 
     # Set emission types
     eTypes = options.emission_types.split(",")
@@ -321,7 +323,7 @@ if __name__ == "__main__":
             fromTime = float(options.start_time)
         except ValueError:
             try:
-                split = options.start_time.split('-')
+                split = options.start_time.split(':')
                 fromTime = (int(split[0]) * 3600) + (int(split[1]) * 60) + float(split[2])
             except IndexError:
                 argParser.error("--start-time is not in the correct format")
@@ -338,7 +340,7 @@ if __name__ == "__main__":
             duration = float(options.duration)
         except ValueError:
             try:
-                split = options.duration.split('-')
+                split = options.duration.split(':')
                 duration = (int(split[0]) * 3600) + (int(split[1]) * 60) + float(split[2])
             except IndexError:
                 argParser.error("--duration is not in the correct format")
@@ -349,7 +351,7 @@ if __name__ == "__main__":
             toTime = float(options.finish_time)
         except ValueError:
             try:
-                split = options.finish_time.split('-')
+                split = options.finish_time.split(':')
                 toTime = (int(split[0]) * 3600) + (int(split[1]) * 60) + float(split[2])
             except IndexError:
                 argParser.error("--finish-time is not in the correct format")
@@ -362,7 +364,7 @@ if __name__ == "__main__":
             timeInterval = int(options.time_interval)
         except ValueError:
             try:
-                split = options.time_interval.split('-')
+                split = options.time_interval.split(':')
                 timeInterval = (int(split[0]) * 3600) + (int(split[1]) * 60) + int(split[2])
             except IndexError:
                 argParser.error("--time-interval is not in the correct format")
@@ -374,12 +376,22 @@ if __name__ == "__main__":
         argParser.error("ending time cannot be smaller than start time")
     if timeInterval <= 0:
         argParser.error("step interval cannot be less than 0")
+    if timeInterval > toTime - fromTime:
+        argParser.error("step interval greater than total time elapsed")
     if timeInterval != np.inf and timeInterval % step_length != 0:
         argParser.error('cannot have a time interval of "%.2f" if the time between steps is %.2f' % (timeInterval, step_length))
     
+
+    if options.verbose:
+        createElement.writeToConsole(done=True)
     emissions = EmissionGenerator(net)
-
+    if options.verbose:
+        createElement.writeToConsole(done=True)
     emissions.collectEmissions(fromStep=fromTime, toStep=toTime, timeInterval=timeInterval, stepLength=step_length, eTypes=eTypes, xmlSource=xmlIter)
-
+    if options.verbose:
+        createElement.writeToConsole(done=True)
     emissions.saveDataFrame(fromStep=fromTime, toStep=toTime, timeInterval=timeInterval, eTypes=eTypes, filename=options.output_file)
+    if options.verbose:
+        createElement.writeToConsole(done=True)
+
     emissions.close()

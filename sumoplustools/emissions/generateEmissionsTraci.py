@@ -1,4 +1,5 @@
 import os, sys
+import numpy as np
 import traci
 import sumolib
 
@@ -7,7 +8,7 @@ from sumoplustools.emissions.generateEmissions import EmissionGenerator
 
 class TraciEmissions(EmissionGenerator):
     def __init__(self, net : sumolib.net.Net):
-        EmissionGenerator.__init__(net)
+        EmissionGenerator.__init__(self, net)
         self._lastSave = None
 
     def resetLastSave(self):
@@ -35,13 +36,24 @@ class TraciEmissions(EmissionGenerator):
         eTypes : List
             List of strings containing the emission types that will be collected.
         """
+        if connection.simulation.getTime() < fromStep or connection.simulation.getTime() > toStep:
+            return 
+
         def getSecond(arr):
             return arr[1]
         if self._lastSave is None or self._lastSave > connection.simulation.getTime():
-            self._lastSave = fromStep - connection.simulation.getDeltaT()
+            self._lastSave = fromStep
+
+        # Save if current time is on the interval to save, only if time interval is not infinity, otherwise save if no vehicles in simulation
+        if connection.simulation.getTime() != fromStep and ((connection.simulation.getTime() - fromStep) % timeInterval == 0 if not timeInterval == np.inf else connection.simulation.getMinExpectedNumber() == 0):
+            if saveRealTime:
+                self.saveRealTime(float(self._lastSave), toStep, timeInterval, eTypes)
+            self.saveEmissionArray(eTypes, float(self._lastSave))
+            self.resetEmissionArrays()
+            self._lastSave = connection.simulation.getTime()
 
         # Check if current time is greater than initial step and less than final step, as well as if vehicles are still in the simulation 
-        if connection.simulation.getTime() >= fromStep and connection.simulation.getTime() < toStep and connection.simulation.getMinExpectedNumber() != 0:
+        if connection.simulation.getMinExpectedNumber() != 0:
 
             calculated_edges = []
 
@@ -74,17 +86,10 @@ class TraciEmissions(EmissionGenerator):
                             closestEdge, _ = sorted(edges, key=getSecond)[0]
                             edgeID = closestEdge.getID()
 
-                        self.addOutputs(self.net, edgeID, emission_output)            
+                        self.addOutputs(edgeID, emission_output)
 
-        if connection.simulation.getTime() - self._lastSave >= timeInterval:
-            if saveRealTime:
-                self.saveRealTime(connection.simulation.getTime(), fromStep, toStep, timeInterval, eTypes)
-            else:
-                self.saveEmissionArray(eTypes, float(self._lastSave) + connection.simulation.getDeltaT())
-            self.resetEmissionArrays(self.net)
-            self._lastSave = connection.simulation.getTime()
     
-    def saveRealTime(self, time, fromStep, toStep, timeInterval, eTypes):
+    def saveRealTime(self, time, toStep, timeInterval, eTypes):
         for eType in eTypes:
             hr = time // 3600
             mins = (time % 3600) // 60
@@ -105,9 +110,9 @@ class TraciEmissions(EmissionGenerator):
                 return
             
             # Adds step to table/dataframe
-            stepArr = self.emission_array
+            stepArr = self.emission_array[self.mapEtypeToIndex(eType)]
             self.sqlConnection.addColumn('%s-%s' % (fromTime, toTime), stepArr, eType)
 
-    def saveEmissions(self, fromStep, toStep, timeInterval, eTypes, filename=None):
-        self.saveDataFrame(fromStep, toStep, timeInterval, eTypes, filename)
+    def saveDataFrame(self, fromStep, toStep, timeInterval, eTypes, filename=None, toSQL=True):
+        super.saveDataFrame(fromStep, toStep, timeInterval, eTypes, filename, toSQL)
         self.resetLastSave()

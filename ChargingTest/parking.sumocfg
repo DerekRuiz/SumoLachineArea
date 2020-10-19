@@ -13,5 +13,8 @@
     <output>
         <emission-output value="Outputs/parkEmission.xml"/>
     </output>
+    <time>
+        <begin value="10"/>
+    </time>
 
 </configuration>

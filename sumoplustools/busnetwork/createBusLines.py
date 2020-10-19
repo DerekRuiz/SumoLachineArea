@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
         # Initialize route element with no edges
         routeElem = ET.Element("route", {"id": 'busRoute_%s' % lineID,"edges": ''})
-        possibleEdges = sorted(possibleEdges, key=createElement.second)
+        possibleEdges = sorted(possibleEdges, key=createElement.last)
 
         prev = None
         for lon, lat in zip(lons,lats):
