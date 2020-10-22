@@ -173,6 +173,7 @@ Note: All folders and files are located in the 'bin' directory <br/>
 * createOutputFiles.bat : Generates emission outputs, vehicles positions, lane changes, and VTK files.
 * createTLS.bat : Adds traffic lights and their programs to a SUMO network file.
 * downsizeMap.bat : Creates a SUMO network file from an OSM file and a boundry.
+* [osmconvert.exe](https://wiki.openstreetmap.org/wiki/Osmconvert) : Thrid party application that modifies osm files.
 * [runWithTraci.py](../../wiki/RunWithTraci.py) : Runs a SUMO simulation with the traCI program running in the program. This allows parallel integration of custom rerouting.
 * speedTestMontreal.bat : Tests the performance of a SUMO simulation with specific arguments.
 
