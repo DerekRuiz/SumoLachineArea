@@ -68,9 +68,9 @@ Note: All folders and files are located in the 'sumoplustools' directory <br/>
 Works with the bus network including the bus stops, bus paths, and creating bus trips.
 
 Contains the following files:
-* createBusLines.py
-* createBusStops.py
-* createBusTrips.py
+* [createBusLines.py](../../wiki/CreateBusLines.py)
+* [createBusStops.py](../../wiki/CreateBusStops.py)
+* [createBusTrips.py](../../wiki/CreateBusTrips.py)
 
 createBusStops.py: Creates a SUMO additional file containing the stops where buses stop to pick up and drop pedestrians provided by a shape-like file. <br/>
 createBusLines.py: Creates a SUMO route file containing the paths where bus take provided by a shape-like file and a bus stops SUMO additional file. <br/>
@@ -80,7 +80,7 @@ createBusTrips.py: Creates a SUMO route file containing the buses and their trip
 Works with charging stations and vehicles with batteries.
 
 Contains the following files:
-* createChargingStations.py
+* [createChargingStations.py](../../wiki/CreateChargingStations.py)
 * routeToCharge.py
 
 createChargingStation.py : Creates a SUMO additional file containing the charging stations provided by a CSV, JSON, or XML. <br/>
@@ -91,30 +91,30 @@ Creates SUMO network files from OSM files. OSM files can be given directly or a 
 
 contains the following files:
 * addOSM.py
-* createPoly.py
+* [createPoly.py](../../wiki/CreatePoly.py)
 
 addOSM.py : Adds an OSM tag to the end of an OSM file if missing. <br/>
 createPoly.py : Transforms a geoJSON to a boundary polygon file.
 
 <label><h3> Emissions of Vehicles </h3></label>
-Deals with emission outputs generated from vehicles in the simulation. For more information how to use these tools, refer to the [wiki](../../wiki/Emission-Tools)
+Deals with emission outputs generated from vehicles in the simulation. For more information how to use these tools, refer to the [wiki](../../wiki/Emission-Tools).
 
 Contains the following files:
 * emissionIO.py
-* generateEmissions.py
+* [generateEmissions.py](../../wiki/GenerateEmissions.py)
 * generateEmissionsTraci.py
 
 emissionIO.py : Connects with input / output methods dealing with emissions. <br/>
-[generateEmissions.py](../../wiki/GenerateEmissions.py) : Generate emission data per street and save the information to a geospatial database. <br/>
+generateEmissions.py : Generate emission data per street and save the information to a geospatial database. <br/>
 generateEmissionsTraci.py : Use TraCI to generates emission data concurrently with the given simulation.
 
 <label><h3> Origin to Destination Trips </h3></label>
 Uses origin to destination matrices to create trips.
 
 Contains the following files:
-* addClassToTrips.py
-* updateMatrixConf.py
-* validateTrips.py
+* [addClassToTrips.py](../../wiki/AddClassToTrips.py)
+* [updateMatrixConf.py](../../wiki/UpdateMatrixConf.py)
+* [validateTrips.py](../../wiki/ValidateTrips.py)
 
 addClassToTrips.py : Creates a vehicle class and adds it to the trip file. <br/>
 updateMatrixConf.py : Updates the given configuration file to reference all OD matrices in a given directory. <br/>
@@ -124,7 +124,7 @@ validateTrips.py : Validates the given trip to ensure that the vehicles can trav
 Works with locations were different types of parkings are located.
 
 Contains the following files:
-* createASP.py
+* [createASP.py](../../wiki/CreateASP.py)
 
 createASP.py : Creates additional file containing alternative side parking.
 
@@ -148,7 +148,7 @@ speedTest.py : Tests the performance of of the SUMO simulation and outputs it to
 Works with the stops in SUMO.
 
 Contains the following files:
-* createStops.py
+* [createStops.py](../../wiki/CreateStops.py)
 
 createStops.py : Adds stops to vehicle routes to indicate where the stop signs are.
 
@@ -156,7 +156,7 @@ createStops.py : Adds stops to vehicle routes to indicate where the stop signs a
 Works with traffic lights in SUMO
 
 Contains the following files:
-* createTLS.py
+* [createTLS.py](../../wiki/CreateTLS.py)
 * createTLSPrograms.py (Not Implemented Yet)
 
 createTLS.py : Creates a SUMO node file containg the traffic light locations. <br/>
