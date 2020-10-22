@@ -11,6 +11,7 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
 
 * [Getting Stated](#-getting-started-)
 * [Added SUMO Tools](#-added-sumo-tools-)
+  * [Bus Network](#-bus-network-)
   * [Charging Stations](#-charging-station-)
   * [Create Map](#-create-map-)
   * [Emissions of Vehicles](#-emissions-of-vehicles-)
@@ -20,6 +21,7 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
   * [Performance Test](#-performance-test-)
   * [Stop Signs](#-stop-signs-)
   * [Traffic Light Intersection](#-traffic-light-intersection-)
+  * [CreateElement.py](#-createelement.py-)
 
 * [Pre-Built Functions](#-pre-built-functions-)
 * [Example Simulations](#-example-simulations-)
@@ -61,14 +63,27 @@ If you have a .sumocfg file then double click on the file or run it in a command
 
 <label><h2> Added SUMO Tools </h2></label>
 Note: All folders and files are located in the 'sumoplustools' directory <br/>
+
+<label><h3> Bus Network </h3></label>
+Works with the bus network including the bus stops, bus paths, and creating bus trips.
+
+Contains the following files:
+* createBusLines.py
+* createBusStops.py
+* createBusTrips.py
+
+createBusStops.py: Creates a SUMO additional file containing the stops where buses stop to pick up and drop pedestrians provided by a shape-like file. <br/>
+createBusLines.py: Creates a SUMO route file containing the paths where bus take provided by a shape-like file and a bus stops SUMO additional file. <br/>
+createBusTrips.py: Creates a SUMO route file containing the buses and their trips provided by a bus line SUMO route file.
+
 <label><h3> Charging Station </h3></label>
 Works with charging stations and vehicles with batteries.
 
 Contains the following files:
-* addChargingStations.py
+* createChargingStations.py
 * routeToCharge.py
 
-addChargingStation.py : Creates a SUMO additional file containing the charging stations provided by a CSV, JSON, or XML. <br/>
+createChargingStation.py : Creates a SUMO additional file containing the charging stations provided by a CSV, JSON, or XML. <br/>
 routeToCharge.py : Reroutes vehicles to the closest charging station when low on battery power. Can only be run while a traCI connection has been established to a SUMO server.
 
 <label><h3> Create Map </h3></label>
@@ -90,7 +105,7 @@ Contains the following files:
 * generateEmissionsTraci.py
 
 emissionIO.py : Connects with input / output methods dealing with emissions. <br/>
-generateEmissions.py : Generate emission data per street and save the information to a geospatial database. <br/>
+[generateEmissions.py](../../wiki/GenerateEmissions.py) : Generate emission data per street and save the information to a geospatial database. <br/>
 generateEmissionsTraci.py : Use TraCI to generates emission data concurrently with the given simulation.
 
 <label><h3> Origin to Destination Trips </h3></label>
@@ -109,9 +124,9 @@ validateTrips.py : Validates the given trip to ensure that the vehicles can trav
 Works with locations were different types of parkings are located.
 
 Contains the following files:
-* addASP.py
+* createASP.py
 
-addASP.py : Creates additional file containing alternative side parking.
+createASP.py : Creates additional file containing alternative side parking.
 
 <label><h3> Postgresql </h3></label>
 Deals with any functionality to working with the Postgresql database.
@@ -119,7 +134,7 @@ Deals with any functionality to working with the Postgresql database.
 Contains the following files:
 * psqlObjects.py
 
-psqlObjects.py : Contains the classes that allow for communication with the database for different sectors (eg: Emission Outputs).
+psqlObjects.py : Contains the classes that allow for communication with the database for different sectors (eg: Emission Outputs, Vehicle Movement).
 
 <label><h3> Performance Test </h3></label>
 Does performance tests on a configuration file with increasing amount of vehicles.
@@ -133,19 +148,22 @@ speedTest.py : Tests the performance of of the SUMO simulation and outputs it to
 Works with the stops in SUMO.
 
 Contains the following files:
-* addStops.py
+* createStops.py
 
-addStops.py : Adds stops to vehicle routes to indicate where the stop signs are.
+createStops.py : Adds stops to vehicle routes to indicate where the stop signs are.
 
 <label><h3> Traffic Light Intersection </h3></label>
 Works with traffic lights in SUMO
 
 Contains the following files:
-* addTLS.py
-* addTLSPrograms.py (Not Implemented Yet)
+* createTLS.py
+* createTLSPrograms.py (Not Implemented Yet)
 
-addTLS.py : Creates a SUMO node file containg the traffic light locations. <br/>
-addTLSPrograms.py : Creates a SUMO additional file containing the programs of the traffic lights.
+createTLS.py : Creates a SUMO node file containg the traffic light locations. <br/>
+createTLSPrograms.py : Creates a SUMO additional file containing the programs of the traffic lights.
+
+<label> CreateElement.py </label>
+Contains basic functions for creating SUMO elements
 
 <label><h2> Pre-Built Functions </h2></label>
 Note: All folders and files are located in the 'bin' directory <br/>
@@ -155,7 +173,7 @@ Note: All folders and files are located in the 'bin' directory <br/>
 * createOutputFiles.bat : Generates emission outputs, vehicles positions, lane changes, and VTK files.
 * createTLS.bat : Adds traffic lights and their programs to a SUMO network file.
 * downsizeMap.bat : Creates a SUMO network file from an OSM file and a boundry.
-* runWithTraci.py : Runs a SUMO simulation with the traCI program running in the program. This allows parallel integration of custom rerouting.
+* [runWithTraci.py](../../wiki/RunWithTraci.py) : Runs a SUMO simulation with the traCI program running in the program. This allows parallel integration of custom rerouting.
 * speedTestMontreal.bat : Tests the performance of a SUMO simulation with specific arguments.
 
 <label><h2> Example Simulations </h2></label>
