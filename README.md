@@ -21,6 +21,7 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
   * [Performance Test](#-performance-test-)
   * [Stop Signs](#-stop-signs-)
   * [Traffic Light Intersection](#-traffic-light-intersection-)
+  * [Vsualize](#-visualize-)
   * [CreateElement.py](#-createelement.py-)
 
 * [Pre-Built Functions](#-pre-built-functions-)
@@ -161,6 +162,14 @@ Contains the following files:
 
 createTLS.py : Creates a SUMO node file containg the traffic light locations. <br/>
 createTLSPrograms.py : Creates a SUMO additional file containing the programs of the traffic lights.
+
+<label><h3> Visualize </h3></label>
+Works with visualization data of SUMO objects.
+
+Contains the following files:
+* generateVisualsTraci.py
+
+generateVisualsTraci.py : Collects vehicle data and saves it to a database for future visualization.
 
 <label> CreateElement.py </label>
 Contains basic functions for creating SUMO elements
