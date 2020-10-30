@@ -5,7 +5,7 @@ import numpy as np
 import xml.etree.ElementTree as ET
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from sumoplustools.stopsigns import addStops 
+from sumoplustools.stopsigns import createStops 
 
 class RerouteChargingDomain():
     def __init__(self, sumocfgFile, connection : traci.Connection, netFile=None, addFiles=None):

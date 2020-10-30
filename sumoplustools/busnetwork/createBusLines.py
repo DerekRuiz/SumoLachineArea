@@ -8,7 +8,8 @@ from shapely.geometry import polygon
 from shapely import ops 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from sumoplustools import createElement
+from sumoplustools import netHandler
+from sumoplustools import verbose
 
 def fillOptions(argParser):
     argParser.add_argument("-n", "--net-file", 
@@ -16,10 +17,10 @@ def fillOptions(argParser):
                             help="SUMO network file (mandatory)")
     argParser.add_argument("-l", "--bus-lines", 
                             metavar="FILE", required=True,
-                            help="the FILE containg the bus line data. (mandatory)")
+                            help="the FILE containing the bus line data. (mandatory)")
     argParser.add_argument("-s", "--bus-stops", 
                             metavar="FILE", required=True,
-                            help="the FILE containg the SUMO bus stop elements. (mandatory)")
+                            help="the FILE containing the SUMO bus stop elements. (mandatory)")
     argParser.add_argument("-o", "--output-file", 
                             metavar="FILE", required=True,
                             help="the FILE output with the bus route elements (mandatory)")
@@ -38,18 +39,18 @@ if __name__ == "__main__":
     options, argParser = parse_args()
 
     if options.verbose:
-        createElement.addVerboseSteps(["extracting data from SUMO network file","extracting data from bus line shape file","extracting data from bus stop file","creating bus routes","writing bus routes to file"])
-        createElement.writeToConsole()
+        verbose.addVerboseSteps(["extracting data from SUMO network file","extracting data from bus line shape file","extracting data from bus stop file","creating bus routes","writing bus routes to file"])
+        verbose.writeToConsole()
     
     # Initialize data from user
     net = sumolib.net.readNet(options.net_file)
     netEdges = net.getEdges()
     if options.verbose:
-        createElement.writeToConsole(done=True)
+        verbose.writeToConsole(done=True)
     busLines_df = gpd.read_file(options.bus_lines)
     busLines_df.to_crs(epsg=4326, inplace=True)
     if options.verbose:
-        createElement.writeToConsole(done=True)
+        verbose.writeToConsole(done=True)
     tree = ET.parse(options.bus_stops)
     stopLanes = {}
     for elem in tree.getroot().findall("busStop"):
@@ -57,7 +58,7 @@ if __name__ == "__main__":
         stop_point = [e.get("value") for e in elem.findall("param") if e.get("key") == "position"][0]
         stopLanes[elem.get("lane")] = {"bus_id":elem.get("id"), "routes_id":stop_routes.split(","), "point": polygon.Point([float(i) for i in stop_point.split(" ")])}
     if options.verbose:
-        createElement.writeToConsole(done=True)
+        verbose.writeToConsole(done=True)
         linesDone = 0
     root = ET.Element("routes")
 
@@ -82,7 +83,7 @@ if __name__ == "__main__":
         if str(row["headsign"]).startswith("STATION"):
             continue
 
-        busLine = createElement.convertLine(net, line)
+        busLine = netHandler.convertLine(net, line)
         lons,lats = busLine.xy
         busLine_buffer = busLine.buffer(20)
         busLine_RHS = busLine.buffer(-10, single_sided=True)
@@ -99,7 +100,7 @@ if __name__ == "__main__":
 
         # Initialize route element with no edges
         routeElem = ET.Element("route", {"id": 'busRoute_%s' % lineID,"edges": ''})
-        possibleEdges = sorted(possibleEdges, key=createElement.last)
+        possibleEdges = sorted(possibleEdges, key=netHandler.last)
 
         prev = None
         for lon, lat in zip(lons,lats):
@@ -141,17 +142,17 @@ if __name__ == "__main__":
             root.append(routeElem) 
             if options.verbose:
                 linesDone += 1
-                createElement.writeToConsole(verboseValue=linesDone)
+                verbose.writeToConsole(verboseValue=linesDone)
 
 
 
 
     # Save tree to a file
     if options.verbose:
-        createElement.writeToConsole(done=True)
+        verbose.writeToConsole(done=True)
     tree = ET.ElementTree(root)
     if not options.output_file.endswith('.rou.xml'):
         options.output_file = os.path.splitext(options.output_file)[0] + '.rou.xml'
     tree.write(options.output_file)
     if options.verbose:
-        createElement.writeToConsole(done=True)
+        verbose.writeToConsole(done=True)

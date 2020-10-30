@@ -90,10 +90,10 @@ echo Converting trips to Routes ...
 echo.
 
 echo Adding stops to Routes ...
-python %sumoplustools%StopSigns\addStops.py -n %netFile% -r %routePath%.passenger.rou.xml -v "passenger"
-python %sumoplustools%StopSigns\addStops.py -n %netFile% -r %routePath%.motorcycle.rou.xml -v "motorcycle"
-python %sumoplustools%StopSigns\addStops.py -n %netFile% -r %routePath%.bus.rou.xml -v "bus"
-python %sumoplustools%StopSigns\addStops.py -n %netFile% -r %routePath%.truck.rou.xml -v "truck"
+python %sumoplustools%StopSigns\createStops.py -n %netFile% -r %routePath%.passenger.rou.xml -v "passenger"
+python %sumoplustools%StopSigns\createStops.py -n %netFile% -r %routePath%.motorcycle.rou.xml -v "motorcycle"
+python %sumoplustools%StopSigns\createStops.py -n %netFile% -r %routePath%.bus.rou.xml -v "bus"
+python %sumoplustools%StopSigns\createStops.py -n %netFile% -r %routePath%.truck.rou.xml -v "truck"
 echo.
 
 del %edgeTaz%

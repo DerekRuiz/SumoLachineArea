@@ -4,12 +4,13 @@ import sumolib
 from xml.etree import ElementTree as ET
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from sumoplustools import createElement
+from sumoplustools import netHandler
+from sumoplustools import verbose
 
 def fillOptions(argParser):
     argParser.add_argument("-l", "--bus-lines", 
                             metavar="FILE", required=True,
-                            help="the FILE containg the SUMO bus routes (mandatory)")
+                            help="the FILE containing the SUMO bus routes (mandatory)")
     argParser.add_argument("-o", "--output-file", 
                             metavar="FILE", required=True,
                             help="the FILE output with the bus trips elements (mandatory)")
@@ -34,17 +35,17 @@ if __name__ == "__main__":
     options, argParser = parse_args()
 
     if options.verbose:
-        createElement.addVerboseSteps(["extracting bus lines","adding vehicle trips","writing to file"])
-        createElement.writeToConsole()
+        verbose.addVerboseSteps(["extracting bus lines","adding vehicle trips","writing to file"])
+        verbose.writeToConsole()
     xmlSource = ET.iterparse(options.bus_lines)
     root = ET.Element("routes")
-    root.append(ET.Element("vType", {"id":"vType_BUS", "vClass":"bus","length":"%.2f" % createElement.sizeOfBus}))
+    root.append(ET.Element("vType", {"id":"vType_BUS", "vClass":"bus","length":"%.2f" % netHandler.sizeOfBus}))
     # Create roots to for each time interval
     roots = []
     for i in range(options.numBuses):
         roots += [ET.Element("root%i" % i)]
     if options.verbose:
-        createElement.writeToConsole(done=True)
+        verbose.writeToConsole(done=True)
 
     vehIdx = 0
     for _, elem in xmlSource:
@@ -56,7 +57,7 @@ if __name__ == "__main__":
             roots[vehicle_num].append(ET.Element("vehicle", {"id":"bus_%i" % vehIdx, "type":"vType_BUS", "route":elem.get("id"), "depart":"%.2f" % (vehicle_num*options.interval)}))
             vehIdx += 1
             if options.verbose:
-                createElement.writeToConsole(verboseValue=vehIdx)
+                verbose.writeToConsole(verboseValue=vehIdx)
         
         elem.clear()
         del elem
@@ -68,12 +69,12 @@ if __name__ == "__main__":
             root.append(veh)
 
     if options.verbose:
-        createElement.writeToConsole(done=True)
+        verbose.writeToConsole(done=True)
     tree = ET.ElementTree(root)
     if not options.output_file.endswith('.rou.xml'):
         options.output_file = os.path.splitext(options.output_file)[0] + '.rou.xml'
     tree.write(options.output_file)
     if options.verbose:
-        createElement.writeToConsole(done=True)
+        verbose.writeToConsole(done=True)
     
 

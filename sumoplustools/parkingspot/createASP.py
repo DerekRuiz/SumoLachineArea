@@ -1,7 +1,11 @@
+import os, sys
 import argparse
 import sumolib
 import xml.etree.ElementTree as ET
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from sumoplustools import netHandler
+from sumoplustools import verbose
 
 def fillOptions(argParser):
     argParser.add_argument("-p", "--parking-file", 

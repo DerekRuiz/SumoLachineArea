@@ -12,7 +12,7 @@ if %useSched% == y (
 
 @ECHO ON
 
-python %sumoplustools%TLIntersection\addTLS.py -n %net% -c %csv% -o %sumoplustools%TLIntersection\tls.nod.xml
+python %sumoplustools%TLIntersection\createTLS.py -n %net% -c %csv% -o %sumoplustools%TLIntersection\tls.nod.xml
 
 netconvert --sumo-net-file %net% --node-files %sumoplustools%TLIntersection\tls.nod.xml -o %output% --tls.allred.time 3 --tls.cycle.time 100 --tls.discard-loaded --tls.guess-signals true --tls.guess-signals.dist 300
 
@@ -20,7 +20,7 @@ del %sumoplustools%TLIntersection\tls.nod.xml
 
 if %useSched% != y exit
 
-python addTLSPrograms.py -n %net% -o %sumoplustools%TLIntersection\tlsProgram.add.xml -c %schedules%
+python createTLSPrograms.py -n %net% -o %sumoplustools%TLIntersection\tlsProgram.add.xml -c %schedules%
 
 netconvert -s %net% -i %sumoplustools%TLIntersection\tlsProgram.add.xml -o %output%
 

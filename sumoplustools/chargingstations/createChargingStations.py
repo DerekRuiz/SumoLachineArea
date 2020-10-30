@@ -1,6 +1,11 @@
+import os, sys
 import argparse
 import sumolib
 from xml.etree import ElementTree as ET
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from sumoplustools import netHandler
+from sumoplustools import verbose
 
 def getWattage(level, connector="", network=""):
     watts = {
@@ -9,18 +14,6 @@ def getWattage(level, connector="", network=""):
         3:50000,
     }
     return watts.get(level,0)
-    
-def getClosestLane(net : sumolib.net.Net, lon, lat):
-    radius = 100
-    x, y = net.convertLonLat2XY(lon, lat)
-    lanes = net.getNeighboringLanes(x, y, radius)
-    if len(lanes) > 0:
-        def second(elem):
-            return elem[1]
-
-        lane, _ = sorted(lanes, key=second)[0]
-        return lane.getID()
-    return None
 
 def addChargerToLane(lane, lv1, lv2, lv3, lon, lat, network, connector):    
     global laneDetails
@@ -87,7 +80,7 @@ def fillOptions(argParser):
                             help="SUMO network file (mandatory)")
     argParser.add_argument("-s", "--charging-stations", 
                             metavar="FILE", required=True,
-                            help="the FILE containg the charging stations data. The file type is a CSV by default (mandatory)")
+                            help="the FILE containing the charging stations data. The file type is a CSV by default (mandatory)")
     argParser.add_argument("-o", "--output-file", 
                             metavar="FILE", default="chargingStations.add.xml",
                             help="the FILE output with the charging stations elements")
@@ -149,9 +142,10 @@ if __name__ == "__main__":
             network = df.loc[i, "EV Network"]
             connector = df.loc[i, "EV Connector Types"]
 
-            lane = getClosestLane(net, lon, lat)
+            lane = netHandler.getClosestLane(net, lon, lat, 100, geoCoords=True)
             if lane is None:
                 continue
+            lane = lane.getID()
             addChargerToLane(lane, lv1, lv2, lv3, lon, lat, network, connector)
         
     createChargeAddFile(net, options.output_file)
