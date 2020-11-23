@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 from sumoplustools import verbose
 
 # Montreal OD18 csv
+# 141,000
 # createODTrips.py -n montreal/montreal.net.xml -t montreal/taz.add.xml -od montreal/externaldata/od18niv2.csv --ori-lat d_orilat --ori-lon d_orilon --dest-lon d_deslon --dest-lat d_deslat --filter "d_orism:1..,d_dessm:1.." --time-col d_hrede --time-format %H%M  --time-field H -o qc_18_hour -v
 
 # MTL
