@@ -1,19 +1,18 @@
 import psycopg2, psycopg2.extras
 from psycopg2 import errors as sqlerror
 from psycopg2 import errorcodes
+from datetime import datetime, timedelta
 import numpy as np
 import geopandas as gpd
 
-class emissionConnection():
+class SQLConnection():
     def __init__(self):
         self.conn = psycopg2.connect(database="SUMO Montreal", user="postgres", password="sumogroup4", host="127.0.0.1", port="5432")
         self.cursor = self.conn.cursor()
-        self.eTables = ["Fuel Emissions","CO2 Emissions", "CO Emissions", "HC Emissions", "PMx Emissions", "NOx Emissions"]
+        self.initalDate = datetime.fromisoformat("2000-01-01")
         self.referenceTable = "GeoCoordinates"
-        self.tempTable = "TEMP"
-        self.temp2Table = "TEMPTEMP"
         self.net2DFTable = "NetToDF"
-
+    
     def execute(self, query):
         try:
             self.cursor.execute(query)
@@ -22,7 +21,7 @@ class emissionConnection():
             raise
         self.conn.commit()
 
-    def execute_values(self, query, tuples):
+    def execute_values(self, query, tuples: tuple):
         try:
             psycopg2.extras.execute_values(self.cursor, query, tuples)
         except Exception:
@@ -31,28 +30,39 @@ class emissionConnection():
         self.conn.commit()
     
     def insertDataFrame(self, dataframe, tableName):
-        tuples = [tuple(x) for x in dataframe.to_numpy()]
-        temp_cols = '","'.join(list(dataframe.columns))
-        command  = '''INSERT INTO public."%s"("%s") VALUES %%s''' % (tableName, temp_cols)
-        self.execute_values(command, tuples)
+        if not dataframe.empty:
+            tuples = [tuple(x) for x in dataframe.to_numpy()]
+            temp_cols = '","'.join(list(dataframe.columns))
+            command  = '''INSERT INTO public."%s"("%s") VALUES %%s''' % (tableName, temp_cols)
+            self.execute_values(command, tuples)
     
-    def retrieveQuery(self) -> list:
+    def retrieveSelectedQuery(self) -> list:
         return self.cursor.fetchall()
+
+    def getQuery(self, tableName, cols: str=None, cond: str=None) -> list:
+        if cols is None:
+            cols = "*"
+        
+        if cond:
+            cond = "WHERE %s" % cond
+        else:
+            cond = ""
+
+        command = 'SELECT %s FROM public."%s" %s' % (cols, tableName, cond)
+        self.execute(command)
+        return self.retrieveSelectedQuery()
+
+    def getGeoDataFrame(self, query) -> gpd.GeoDataFrame:
+        return gpd.read_postgis(sql=query, con=self.conn, geom_col='geometry')
     
-    def get_eTable(self, eType) -> str:
-        for table in self.eTables:
-            if (eType.strip() + " Emissions").upper() in table.upper():
-                return table
+    def getDataFrame(self, query) -> gpd.pd.DataFrame:
+        return gpd.pd.read_sql_query(sql=query, con=self.conn)
 
     def getReferenceDF(self) -> gpd.GeoDataFrame:
-        return gpd.read_postgis('SELECT osm_id, geometry FROM public."%s";' % self.referenceTable, self.conn, geom_col='geometry')
+        return self.getGeoDataFrame('SELECT osm_id, geometry FROM public."%s";' % self.referenceTable).astype({"osm_id":str})
 
     def dropTable(self, tableName):
-        self.execute('''DROP TABLE IF EXISTS public."%s";''' % (tableName))
-            
-    def dropAll_eTables(self):
-        for table in self.eTables:
-            self.dropTable(table)
+        self.execute('''DROP TABLE IF EXISTS public."%s";'''% (tableName))
             
     def createTable(self, tableName, cols=""):
         command = '''CREATE TABLE public."%s"(%s);
@@ -67,99 +77,133 @@ class emissionConnection():
         dataframe = gpd.pd.DataFrame(self.getReferenceDF().drop('geometry',axis=1))
         self.insertDataFrame(dataframe, tableName)
 
-    def createAll_eTables(self, reference=True, cols=""):
-        for table in self.eTables:
-            if reference:
-                self.createTableWithReference(table, cols=cols)
-            else:
-                self.createTable(table, cols=cols)
-
-    
-
-    def saveDataFrame(self, dataframe, eType, overide=False):
-        eTable = self.get_eTable(eType)
-        if overide:
-            self.dropTable(eTable)
-            self.createTable(eTable)
-        else:
-            try:
-                self.createTable(eTable)
-            except sqlerror.lookup(errorcodes.DUPLICATE_TABLE):
-                pass
-        
-        cols = '" numeric, ADD "'.join(list(dataframe.columns))
-        self.execute('ALTER TABLE public."%s" ADD "%s" numeric;' % (eTable, cols))
-        self.insertDataFrame(dataframe, eTable)
-        
-
-    def addColumn(self, col, arr, eType):
-        eTable = self.get_eTable(eType)
-        tempTable = self.tempTable
-        tempDF = self.getReferenceDF()
-        
-        tempDF = gpd.pd.DataFrame(tempDF.drop("geometry", axis=1))
-        tempDF = tempDF.join(gpd.pd.DataFrame(arr), how="right")
-        tempDF[0] = tempDF[0].astype(float)
-        tempDF = tempDF.rename({0:'%s' % col}, axis=1)
-        
-        # Refresh Temp table to have the new column
-        self.dropTable(tempTable)
-        command = '''CREATE TABLE public."%s"("osm_id" text, "%s" numeric);
-                ALTER TABLE public."%s"
-                    OWNER to postgres;''' % (tempTable, col, tempTable)
-        self.execute(command)
-
-        # Insert dataframe into temp table
-        self.insertDataFrame(tempDF, tempTable)
-
-        # Create new table with updated etype
-        command = '''select etype.*, temp."%s" 
-	    into public."%s"
-        FROM public."%s" etype INNER JOIN public."%s" temp
-        ON etype."osm_id" = temp."osm_id";''' % (col, self.temp2Table, eTable, tempTable)
-        self.execute(command)
-
-        # Drop old etype table and rename updated table
-        self.dropTable(eTable)
-        self.execute('''ALTER TABLE public."%s" RENAME TO "%s";''' % (self.temp2Table, eTable))
-
-        self.dropTable(tempTable)
-
     def getNetToDFMap(self):
         net2df = {}
         table = self.net2DFTable
         
         self.execute('SELECT * FROM public."%s"' % table)
-        records = self.retrieveQuery()
+        records = self.retrieveSelectedQuery()
         for row in records:
-            net2df[str(row[0])] = int(row[1])
+            net2df[str(row[0])] = str(row[1])
         return net2df
-
-    def getQuery(self, tableName, cols=None, cond=None):
-        if cols:
-            if type(cols) != str:
-                hr = cols // 3600
-                mins = (cols % 3600) // 60
-                sec = (cols % 3600) % 60
-                cols = "%i:%.2i:%.2f" % (hr,mins,sec)
-        else:
-            cols = "*"
-        
-        if cond:
-            cond = "WHERE %s" % cond
-        else:
-            cond = ""
-
-        command = 'SELECT %s FROM public."%s" %s' % (cols, tableName, cond)
-        self.execute(command)
-
 
     def close(self):
         self.cursor.close()
         self.conn.close()
 
-def initializeReferenceTable(dataframe):
-    sql = emissionConnection()
+class EmissionConnection(SQLConnection):
+    def __init__(self):
+        SQLConnection.__init__(self)
+        self.eTable = "Emissions"
+        self.keyColumns = ["Time", "osm_id", "veh_id"]
+        self.eColumns = ["Fuel","CO2","CO","HC","NOx","PMx"]
+
+    def get_eTypeCol(self, eType: str) -> str:
+        name = {"FUEL":"Fuel", "CO":"CO", "CO2":"CO2", "HC":"HC", "NOX":"NOx","PMX":"PMx"}
+        return name[eType.upper()]
+    
+    def clearEmissionsTable(self):
+        self.dropTable(self.eTable)
+        self.createTable(self.eTable, '"%s" timestamp without time zone, %s text, %s text, "%s" numeric, "%s" numeric, "%s" numeric, "%s" numeric, "%s" numeric, "%s" numeric'
+            % (self.keyColumns[0], self.keyColumns[1], self.keyColumns[2], self.eColumns[0], self.eColumns[1], self.eColumns[2], self.eColumns[3], self.eColumns[4], self.eColumns[5]))
+    
+    def get_eTableDF_osm(self, eTypes: list, osm_ids: list=None, fromTime: float=None, toTime: float=None) -> gpd.GeoDataFrame:
+        ecol = ""
+        sumCol = ""
+        for col in [self.get_eTypeCol(etype) for etype in eTypes]:
+            ecol += 'COALESCE(etype."%s",0) "%s", ' % (col, col)
+            sumCol += 'SUM(etype."%s") "%s", ' % (col, col)
+
+        cond = ""
+        if fromTime:
+           fromTime = self.initalDate + timedelta(days=fromTime // (3600 * 24), seconds=fromTime % (3600 * 24))
+           cond = '''WHERE etype."Time" >= '%s' ''' % str(fromTime)
+        if toTime:
+            toTime = self.initalDate + timedelta(days=toTime // (3600 * 24), seconds=toTime % (3600 * 24))
+            if fromTime:
+                cond = '''WHERE etype."Time" BETWEEN '%s' AND '%s' ''' % (str(fromTime), str(toTime))
+            else:
+                cond = '''WHERE etype."Time" <= '%s' ''' % str(toTime)
+        
+        if osm_ids:
+            if cond != "":
+                cond += " AND etype.osm_id IN ('%s')" % ("','".join(osm_ids))
+            else:
+                cond = "WHERE etype.osm_id IN ('%s')" % ("','".join(osm_ids))
+        
+        command = '''SELECT reference."osm_id", %s, reference."geometry"
+        FROM public."%s" reference LEFT OUTER JOIN (
+            SELECT etype.osm_id, %s from public."%s" etype
+            %s
+            group by etype.osm_id) etype
+        ON reference."osm_id" = etype."osm_id"''' % (ecol.strip(' ,'), self.referenceTable, sumCol.strip(' ,'), self.eTable, cond)
+        
+        return self.getGeoDataFrame(command)
+
+    def get_eTableDF_veh(self, eTypes: list, veh_ids: list=None, fromTime: float=None, toTime: float=None) -> gpd.pd.DataFrame:
+        sumCol = ""
+        for col in [self.get_eTypeCol(etype) for etype in eTypes]:
+            sumCol += 'SUM(etype."%s") "%s", ' % (col, col)
+        
+        cond = ""
+        if fromTime:
+           fromTime = self.initalDate + timedelta(days=fromTime // (3600 * 24), seconds=fromTime % (3600 * 24))
+           cond = '''WHERE etype."Time" >= '%s' ''' % str(fromTime)
+        if toTime:
+            toTime = self.initalDate + timedelta(days=toTime // (3600 * 24), seconds=toTime % (3600 * 24))
+            if fromTime:
+                cond = '''WHERE etype."Time" BETWEEN '%s' AND '%s' ''' % (str(fromTime), str(toTime))
+            else:
+                cond = '''WHERE etype."Time" <= '%s' ''' % str(toTime)
+        
+        if veh_ids:
+            if cond != "":
+                cond += " AND etype.veh_id IN ('%s')" % ("','".join(veh_ids))
+            else:
+                cond = "WHERE etype.veh_id IN ('%s')" % ("','".join(veh_ids))
+        
+        command = '''SELECT etype.veh_id, %s from public."%s" etype
+            %s
+            group by etype.veh_id''' % (sumCol.strip(' ,'), self.eTable, cond)
+        
+        return self.getDataFrame(command)
+    
+    def insertTimeStep(self, time : float, emissions: gpd.pd.DataFrame):
+        date = self.initalDate + timedelta(seconds=time)
+        emissions.insert(0, "Time", date)
+        self.insertDataFrame(emissions, self.eTable)
+
+class VisualConnection(SQLConnection):
+    def __init__(self):
+        SQLConnection.__init__(self)
+        self.vehTable = "VehicleData"
+        self.columns = ["Time", "veh_id", "osm_id", "lon", "lat", "speed", "direction", "vtype", "vclass"]
+
+    def clearVehicleTable(self):
+        self.dropTable(self.vehTable)
+        self.createTable(self.vehTable, '"%s" timestamp without time zone, "%s" text, "%s" text, "%s" numeric, "%s" numeric, "%s" numeric, "%s" numeric, "%s" text, "%s" text'
+            % (self.columns[0], self.columns[1], self.columns[2], self.columns[3], self.columns[4], self.columns[5], self.columns[6], self.columns[7], self.columns[8]))
+    
+    def getVehDF(self, veh_id, fromTime: float=None, toTime: float=None):
+        cond = '''WHERE vehicle."%s" = '%s' ''' % (self.columns[1], veh_id)
+        if fromTime:
+           fromTime = self.initalDate + timedelta(days=fromTime // (3600 * 24), seconds=fromTime % (3600 * 24))
+           cond += ''' AND vehicle."%s" >= '%s' ''' % (self.columns[0], str(fromTime))
+        if toTime:
+            toTime = self.initalDate + timedelta(days=toTime // (3600 * 24), seconds=toTime % (3600 * 24))
+            cond += ''' AND vehicle."%s" <= '%s' ''' % (self.columns[0], str(toTime))
+        
+        command = '''SELECT * from public."%s" vehicle %s''' % (self.vehTable, cond)
+        
+        return self.getDataFrame(command)
+
+
+def initializeReferenceTable(dataframe: gpd.GeoDataFrame):
+    '''
+    Initializes the SQL database with the reference table for the map.
+    The dataframe must have a column named 'osm_id' that is a unique id for each street, and a column named 'geometry' that is the shape of the street".
+    '''
+    sql = SQLConnection()
     referenceTable = sql.referenceTable
 
     command = '''DROP TABLE IF EXISTS public."%s";''' % (referenceTable)
@@ -169,18 +213,21 @@ def initializeReferenceTable(dataframe):
         OWNER to postgres;''' % (referenceTable, referenceTable)
     sql.execute(command)
 
-    for _, row in dataframe.iterrows():
-        command  = "INSERT INTO public.\"%s\" VALUES(%s, '%s');" % (referenceTable, row['osm_id'], row['geometry'][0])
-        sql.execute(command)
+    dataframe = dataframe['osm_id', 'geometry']
+    sql.insertDataFrame(dataframe, referenceTable)
     sql.close()
 
 def initializeNetToDFTable(net, dataframe):
+    '''
+    Initializes the SQL database with the conversion from a SUMO network edge to a dataframe street.
+    The dataframe must have a column named 'osm_id' that is a unique id for each street".
+    '''
     from shapely.geometry.polygon import LineString
-    sql = emissionConnection()
+    sql = SQLConnection()
     table = sql.net2DFTable
     
     sql.dropTable(table)
-    command = '''CREATE TABLE public."%s"(net text, dfIndex numeric);
+    command = '''CREATE TABLE public."%s"(edge_id text, osm_id text);
     ALTER TABLE public."%s"
         OWNER to postgres;''' % (table, table)
     sql.execute(command)
@@ -194,14 +241,19 @@ def initializeNetToDFTable(net, dataframe):
     for edge in edges:
         edgeLine = LineString([net.convertXY2LonLat(x,y) for x,y in edge.getShape()])
         for closestIndex in idx.nearest(edgeLine.bounds):
-            command = '''INSERT INTO public."%s" VALUES('%s', %s)''' % (table, edge.getID(), closestIndex)
+            command = '''INSERT INTO public."%s" VALUES('%s', %s)''' % (table, edge.getID(), dataframe.loc[closestIndex, "osm_id"])
             sql.execute(command)
             break
 
-'''select * 
-from public."GeoCoordinates"
-inner join public."Fuel Emissions" 
-on public."Fuel Emissions"."osm_id" = public."GeoCoordinates"."osm_id"
-inner join public."CO2 Emissions"
-on public."CO2 Emissions"."osm_id" = public."GeoCoordinates"."osm_id"
+
+'''
+Combine show between times
+select te."geometry", COALESCE(ae.fuel, 0) fuel
+FROM public."GeoCoordinates" te left outer join (
+	Select ab.osm_id, sum("Fuel") fuel from public."Emissions" ab
+	where ab."Time" >= '2000-01-01 0:01:41' and ab."Time" <= '2000-01-01 2:00:00'
+	group by ab.osm_id
+) ae
+ON te."osm_id" = ae."osm_id"
+where fuel != 0
 '''
