@@ -4,6 +4,7 @@ from datetime import timedelta
 import traci
 import sumolib
 import geopandas as gpd
+import json
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from sumoplustools.postgresql.psqlObjects import VisualConnection
@@ -15,11 +16,12 @@ class TraciVisuals():
         self.net = net
         self.mapNetToDF = self.sqlConnection.getNetToDFMap()
 
-        self._sql_buffer = gpd.pd.DataFrame(columns=self.sqlConnection.columns)
+        self._json_output = {}
+        self._sql_buffer = []
         self._lastSave = None
 
     def _resetSQLBuffer(self):
-        self._sql_buffer = self._sql_buffer.iloc[0:0]
+        self._sql_buffer = []
 
     def resetLastSave(self):
         self._lastSave = None
@@ -40,7 +42,7 @@ class TraciVisuals():
             Names of outputs associated with their numerical value
         """
         time = self.sqlConnection.initalDate + timedelta(seconds=time)
-        self._sql_buffer = self._sql_buffer.append({self.sqlConnection.columns[0]:time, self.sqlConnection.columns[1]:veh_id, **visual_output}, ignore_index=True)
+        self._sql_buffer.append({self.sqlConnection.columns[0]:time, self.sqlConnection.columns[1]:veh_id, **visual_output})
         
 
     def saveToSQL(self, force=False):
@@ -52,8 +54,9 @@ class TraciVisuals():
         force : bool
             Whether to force the save and ignore if full
         '''
-        if self._sql_buffer.shape[0] / (10**3) >= 10 or force: # self._sql_buffer.memory_usage(deep=True).sum() / (10**6) >= 5 self._sql_buffer.shape[0] / (10**3) >= 40
-            #self.sqlConnection.insertDataFrame(self._sql_buffer, self.sqlConnection.vehTable)
+        if len(self._sql_buffer) / (10**3) >= 100 or force:
+            sql_df = gpd.pd.DataFrame.from_dict(self._sql_buffer)
+            self.sqlConnection.insertDataFrame(sql_df, self.sqlConnection.vehTable)
             self._resetSQLBuffer()
     
     def clearSQLVisuals(self):
@@ -114,6 +117,22 @@ class TraciVisuals():
             edgeID = netHandler.getClosestEdge(self.net, x, y, noLimit=True).getID()
 
         visual_output = {cols[2]:self.mapNetToDF[edgeID], cols[3]:lon, cols[4]:lat, cols[5]:speed, cols[6]:direction, cols[7]:vtype, cols[8]:vclass}
+        if vehID in self._json_output:
+            self._json_output[vehID] = {cols[0]: self._json_output[vehID][cols[0]] + [connection.simulation.getTime()], 
+                cols[2]:self._json_output[vehID][cols[2]] + [self.mapNetToDF[edgeID]], 
+                cols[3]:self._json_output[vehID][cols[3]] + [lon], 
+                cols[4]:self._json_output[vehID][cols[4]] + [lat], 
+                cols[5]:self._json_output[vehID][cols[5]] + [speed], 
+                cols[6]:self._json_output[vehID][cols[6]] + [direction], 
+                cols[7]:self._json_output[vehID][cols[7]] + [vtype], 
+                cols[8]:self._json_output[vehID][cols[8]] + [vclass]}
+        else:
+            self._json_output[vehID] = {cols[0]:[connection.simulation.getTime()], 
+                cols[2]:[self.mapNetToDF[edgeID]], 
+                cols[3]:[lon], cols[4]:[lat], 
+                cols[5]:[speed], cols[6]:[direction], 
+                cols[7]:[vtype], cols[8]:[vclass]}
+
         self.addOutputs(connection.simulation.getTime(), vehID, visual_output)
 
     def collectVisuals(self, fromStep, toStep, timeInterval, eTypes, connection : traci.Connection):
@@ -150,6 +169,6 @@ class TraciVisuals():
             self.collectVehicleVisuals(vehID, connection)
 
     def close(self):
-        if not self._sql_buffer.empty:
+        if len(self._sql_buffer) != 0:
             self.saveToSQL(force=True)
         self.sqlConnection.close()
