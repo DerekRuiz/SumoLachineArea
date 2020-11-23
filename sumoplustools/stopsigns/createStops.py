@@ -1,38 +1,11 @@
 import os, sys
 import argparse
 import sumolib
-import traci
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from sumoplustools import netHandler
 from sumoplustools import verbose
-
-_duration = 1.0
-_start_pos = -1.0
-_end_pos = -1.0
-
-def stopAtEdge(net : sumolib.net.Net, edgeID : str, vehicle_class_type : str):
-    noStops = ["dead_end","traffic_light"]
-    # yesStops = ["rail_crossings","priority","right_before_left"]
-    edge = net.getEdge(edgeID)
-    toJunction = edge.getToNode()
-    if not edge.allows(vehicle_class_type):
-        return False
-    if toJunction.getType() in noStops:
-        return False
-    if edge.getLength() < 5:
-        return False
-    if not ("residential" in edge.getType() or "unclassified" in edge.getType()):
-        return False
-    
-    return True
-
-def getStopParam() -> (float, float, float):
-    """
-    Returns the parameters for a stop on an edge.
-    Returns a tuple containing (start position, end position, time duration)
-    """
-    return (_start_pos, _end_pos, _duration)
+from sumoplustools.stopsigns import stopHandler
 
 def fillOptions(argParser):
     argParser.add_argument("-n", "--sumo-network-file", 
@@ -75,14 +48,14 @@ if __name__ == "__main__":
                     edges += [edgeID]
         # Ensures no duplicates stops on edges
         for edgeID in edges:
-            if stopAtEdge(net, edgeID, options.vehicle_class):
+            if stopHandler.stopAtEdge(net, edgeID, options.vehicle_class):
                 for lane in net.getEdge(edgeID).getLanes():
                     if lane.allows(options.vehicle_class):
                         stopElem = ET.Element("stop")
                         stopElem.set("lane", lane.getID())
-                        stopElem.set("startPos", "%.2f" % _start_pos)
-                        stopElem.set("endPos", "%.2f" % _end_pos)
-                        stopElem.set("duration", "%.2f" % _duration)
+                        stopElem.set("startPos", "%.2f" % stopHandler._start_pos)
+                        stopElem.set("endPos", "%.2f" % stopHandler._end_pos)
+                        stopElem.set("duration", "%.2f" % stopHandler._duration)
                         stopElem.set("friendlyPos", "1")
                         vehicle.append(stopElem)
 

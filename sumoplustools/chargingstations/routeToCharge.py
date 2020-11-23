@@ -5,7 +5,7 @@ import numpy as np
 import xml.etree.ElementTree as ET
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from sumoplustools.stopsigns import createStops 
+from sumoplustools.stopsigns import stopHandler 
 
 class RerouteChargingDomain():
     def __init__(self, sumocfgFile, connection : traci.Connection, netFile=None, addFiles=None):
@@ -98,11 +98,11 @@ class RerouteChargingDomain():
         return closestChargingStation, closestEdge
         
     def addStopsToVehicle(self, vehID):
-        startPos, endPos, duration  = addStops.getStopParam()
+        startPos, endPos, duration  = stopHandler.getStopParam()
         routeID = self.connection.vehicle.getRouteID(vehID)
 
         for edgeID in self.connection.route.getEdges(routeID):
-            if addStops.stopAtEdge(self.net, edgeID):
+            if stopHandler.stopAtEdge(self.net, edgeID):
                 self.connection.vehicle.setStop(vehID, edgeID, pos=endPos, duration=duration, startPos=startPos)
 
     def rerouteVehicles(self, startRerouteThreshold=20, finishRerouteThreshold=80, randomThreshold=True):
