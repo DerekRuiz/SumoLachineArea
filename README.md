@@ -21,8 +21,9 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
   * [Performance Test](#-performance-test-)
   * [Stop Signs](#-stop-signs-)
   * [Traffic Light Intersection](#-traffic-light-intersection-)
-  * [Vsualize](#-visualize-)
-  * [CreateElement.py](#-createelement.py-)
+  * [Visualize](#-visualize-)
+  * [NetHandler.py](#-nethandler.py-)
+  * [Verbose.py](#-verbose.py-)
 
 * [Pre-Built Functions](#-pre-built-functions-)
 * [Example Simulations](#-example-simulations-)
@@ -114,10 +115,15 @@ Uses origin to destination matrices to create trips.
 
 Contains the following files:
 * [addClassToTrips.py](../../wiki/AddClassToTrips.py)
+* [createODMatrix.py](../../wiki/CreateODMatrix.py)
+* [createTAZaddFile.py](../../wiki/CreateTAZaddFile.py)
 * [updateMatrixConf.py](../../wiki/UpdateMatrixConf.py)
 * [validateTrips.py](../../wiki/ValidateTrips.py)
 
 addClassToTrips.py : Creates a vehicle class and adds it to the trip file. <br/>
+createODMatrix.py : Creates OD matrices based on origin destination data sets. <br/>
+createTAZaddFile.py : Creates Traffic Analysis Zones for OD matrices. <br/>
+displayODMatrix.py : Displays OD matrices to show their distribution spatially. <br/>
 updateMatrixConf.py : Updates the given configuration file to reference all OD matrices in a given directory. <br/>
 validateTrips.py : Validates the given trip to ensure that the vehicles can travel on it.
 
@@ -171,8 +177,11 @@ Contains the following files:
 
 generateVisualsTraci.py : Collects vehicle data and saves it to a database for future visualization.
 
-<label> CreateElement.py </label>
-Contains basic functions for creating SUMO elements
+<label> NetHandler.py </label>
+Contains basic functions for creating and handling SUMO network elements.
+
+<label> Verbose.py </label>
+Contains functions to detail current step of another programs process.
 
 <label><h2> Pre-Built Functions </h2></label>
 Note: All folders and files are located in the 'bin' directory <br/>
