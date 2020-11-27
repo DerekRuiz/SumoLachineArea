@@ -14,12 +14,12 @@ def fillOptions(argParser):
     argParser.add_argument("-n", "--sumo-net-file", 
                             metavar="FILE", required=True,
                             help="conversion to SUMO coords using FILE (mandatory)")
-    argParser.add_argument("-t", "--census-tracts-file", 
+    argParser.add_argument("-c", "--census-file", 
                             metavar="FILE", required=True,
                             help="create districts based from shape-like FILE (mandatory)")
     argParser.add_argument("-b", "--boundary-file", 
                             metavar="FILE",
-                            help="boundary shape-like FILE to limit the area of the cencus tract")
+                            help="boundary shape-like FILE to limit the area of the census")
     argParser.add_argument("-o", "--output-file",
                             metavar="FILE", default="taz.add.xml",
                             help="TAZ data is save to FILE")

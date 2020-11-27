@@ -11,44 +11,37 @@ from xml.etree import ElementTree as ET
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from sumoplustools import verbose
 
-# Montreal OD18 csv
-# 141,000
-# createODTrips.py -n montreal/montreal.net.xml -t montreal/taz.add.xml -od montreal/externaldata/od18niv2.csv --ori-lat d_orilat --ori-lon d_orilon --dest-lon d_deslon --dest-lat d_deslat --filter "d_orism:1..,d_dessm:1.." --time-col d_hrede --time-format %H%M  --time-field H -o qc_18_hour -v
-
-# MTL
-# 375,000 entries
-# createODTrips.py -n montreal/montreal.net.xml -t montreal/taz.add.xml -od montreal/externaldata/mtl_trajet_17_shp --time-col starttime --time-format '%Y-%m-%d %H:%M:%S%Z' --time-field D -o mtl_wday -v
 def fillOptions(argParser):
     argParser.add_argument("-n", "--sumo-net-file", 
                             metavar="FILE", required=True,
                             help="conversion to SUMO coords using FILE (mandatory)")
     argParser.add_argument("-t", "--taz-add-file", 
                             metavar="FILE", required=True,
-                            help="gets districts from FILE")
+                            help="gets districts from FILE (mandatory)")
     argParser.add_argument("-od", "--origin-dest-file", 
                             metavar="FILE", required=True,
-                            help="OD trip data in FILE that uses geometry column by default")
+                            help="OD trip data in FILE that uses geometry column by default (mandatory)")
     argParser.add_argument("-o", "--output-file",
                             metavar="FILE", default="tazMatrix",
-                            help="TAZ data is save to FILE")
+                            help="OD matrix is save to FILE")
     argParser.add_argument("--ori-lon", 
                             metavar="STR", type=str,
-                            help="OD column that contains the origin's longitude")
+                            help="OD column that contains the origin's longitude. Uses the geometry column if omitted")
     argParser.add_argument("--ori-lat", 
                             metavar="STR", type=str,
-                            help="OD column that contains the origin's latitude")
+                            help="OD column that contains the origin's latitude. Uses the geometry column if omitted")
     argParser.add_argument("--dest-lon", 
                             metavar="STR", type=str,
-                            help="OD column that contains the destination's longitude")
+                            help="OD column that contains the destination's longitude. Uses the geometry column if omitted")
     argParser.add_argument("--dest-lat", 
                             metavar="STR", type=str,
-                            help="OD column that contains the destination's latitude")
+                            help="OD column that contains the destination's latitude. Uses the geometry column if omitted")
     argParser.add_argument("--time-col", 
                             metavar="STR", type=str,
                             help="column that contains time of departure in seconds")
     argParser.add_argument("--time-format", 
                             metavar="STR", type=str, required='--time-col' in sys.argv,
-                            help="format of the time structure. Required if time column is provided. For more information on time format use reference time.strptime()")
+                            help="format of the time structure. Required if time column is provided. For more information on time format use reference time.strftime")
     argParser.add_argument("--time-field", 
                             metavar="STR", type=str, default="H",
                             help="time field to group entries: (M) min, (H) hour, (D) dayOfWeek")
@@ -218,9 +211,6 @@ if __name__ == "__main__":
         verbose.writeToConsole(done=True)
 
     for idx, tazMatrix in enumerate(tazMatrices):
-        if not np.any(tazMatrix):
-            continue
-
-        np.save("%s_%i" % (options.output_file, idx), tazMatrix)
+        np.save("%s_%i" % (os.path.splitext(options.output_file)[0], idx), tazMatrix)
 
 
