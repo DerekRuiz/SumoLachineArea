@@ -117,6 +117,7 @@ Contains the following files:
 * [addClassToTrips.py](../../wiki/AddClassToTrips.py)
 * [createODMatrix.py](../../wiki/CreateODMatrix.py)
 * [createTAZaddFile.py](../../wiki/CreateTAZaddFile.py)
+* [displayODMatrix.py](../../wiki/DisplayODMatrix.py)
 * [updateMatrixConf.py](../../wiki/UpdateMatrixConf.py)
 * [validateTrips.py](../../wiki/ValidateTrips.py)
 
