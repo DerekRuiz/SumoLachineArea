@@ -211,6 +211,6 @@ if __name__ == "__main__":
         verbose.writeToConsole(done=True)
 
     for idx, tazMatrix in enumerate(tazMatrices):
-        np.save("%s_%i" % (os.path.splitext(options.output_file)[0], idx), tazMatrix)
+        np.save("%s_" % os.path.splitext(options.output_file)[0] + ("%i" % idx).zfill(2), tazMatrix)
 
 
