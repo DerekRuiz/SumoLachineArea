@@ -9,7 +9,6 @@ from shapely.geometry import LineString
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from sumoplustools.emissions import emissionIO as eio
-from sumoplustools.emissions import displayEmissions
 from sumoplustools.postgresql.psqlObjects import EmissionConnection
 from sumoplustools import verbose
 
