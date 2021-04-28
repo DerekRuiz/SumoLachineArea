@@ -83,10 +83,8 @@ Works with charging stations and vehicles with batteries.
 
 Contains the following files:
 * [createChargingStations.py](../../wiki/CreateChargingStations.py)
-* routeToCharge.py
 
 createChargingStation.py : Creates a SUMO additional file containing the charging stations provided by a CSV, JSON, or XML. <br/>
-routeToCharge.py : Reroutes vehicles to the closest charging station when low on battery power. Can only be run while a traCI connection has been established to a SUMO server.
 
 <label><h3> Create Map </h3></label>
 Creates SUMO network files from OSM files. OSM files can be given directly or a larger OSM file and a boundary file can be provided.
@@ -104,11 +102,9 @@ Deals with emission outputs generated from vehicles in the simulation. For more 
 Contains the following files:
 * emissionIO.py
 * [generateEmissions.py](../../wiki/GenerateEmissions.py)
-* generateEmissionsTraci.py
 
 emissionIO.py : Connects with input / output methods dealing with emissions. <br/>
 generateEmissions.py : Generate emission data per street and save the information to a geospatial database. <br/>
-generateEmissionsTraci.py : Use TraCI to generates emission data concurrently with the given simulation.
 
 <label><h3> Origin to Destination Trips </h3></label>
 Uses origin to destination matrices to create trips.
@@ -174,14 +170,22 @@ createTLSPrograms.py : Creates a SUMO additional file containing the programs of
 Works with visualization data of SUMO objects.
 
 Contains the following files:
+* generateEmissionsTraci.py
 * generateVisualsTraci.py
+* routeToCharge.py
+* routeToPark.py
+* [runWithTraci.py](../../wiki/RunWithTraci.py)
 
-generateVisualsTraci.py : Collects vehicle data and saves it to a database for future visualization.
+generateEmissionsTraci.py : Use TraCI to generates emission data concurrently with the given simulation. <br/>
+generateVisualsTraci.py : Collects vehicle data and saves it to a database for future visualization. <br/>
+routeToCharge.py : Reroutes vehicles to the closest charging station when low on battery power. Can only be run while a traCI connection has been established to a SUMO server. <br/>
+routeToPark.py : Reroutes vehicles to a proper parking location if they are in need of parking their vehicle. <br/>
+runWithTraci.py : Runs a SUMO simulation with the traCI program running in the program. This allows parallel integration of custom rerouting.
 
-<label> NetHandler.py </label>
+<label><h3> NetHandler.py </h3></label>
 Contains basic functions for creating and handling SUMO network elements.
 
-<label> Verbose.py </label>
+<label><h3> Verbose.py </h3></label>
 Contains functions to detail current step of another programs process.
 
 <label><h2> Pre-Built Functions </h2></label>
@@ -193,7 +197,6 @@ Note: All folders and files are located in the 'bin' directory <br/>
 * createTLS.bat : Adds traffic lights and their programs to a SUMO network file.
 * downsizeMap.bat : Creates a SUMO network file from an OSM file and a boundry.
 * [osmconvert.exe](https://wiki.openstreetmap.org/wiki/Osmconvert) : Thrid party application that modifies osm files.
-* [runWithTraci.py](../../wiki/RunWithTraci.py) : Runs a SUMO simulation with the traCI program running in the program. This allows parallel integration of custom rerouting.
 * speedTestMontreal.bat : Tests the performance of a SUMO simulation with specific arguments.
 
 <label><h2> Example Simulations </h2></label>
