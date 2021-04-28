@@ -4,15 +4,12 @@ import argparse
 import sumolib
 import traci
 import numpy as np
-import osmnx as ox
-import geopandas as gpd
 from xml.etree import ElementTree as ET
 
-
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from sumoplustools.chargingstations.routeToCharge import RerouteChargingDomain
-from sumoplustools.emissions.generateEmissionsTraci import TraciEmissions
-from sumoplustools.visualize.generateVisualsTraci import TraciVisuals
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from sumoplustools.traciModules.routeToCharge import RerouteChargingDomain
+from sumoplustools.traciModules.generateEmissionsTraci import TraciEmissions
+from sumoplustools.traciModules.generateVisualsTraci import TraciVisuals
 
 def fillOptions(argParser):
     generalGroup = argParser.add_argument_group("General")
@@ -276,8 +273,6 @@ if __name__ == "__main__":
         t_visuals = TraciVisuals(net)
         t_visuals.clearSQLVisuals()
 
-    import time
-    initime = time.process_time()
     # Main loop through the simulation #
     while connection.simulation.getMinExpectedNumber() > 0:
         if options.reroute_charging:
@@ -294,7 +289,6 @@ if __name__ == "__main__":
                 t_visuals.collectVehicleVisuals(vehID, connection)
 
         connection.simulationStep()
-    print(time.process_time() - initime)
 
     if options.generate_emissions:
         if options.emission_output_file:

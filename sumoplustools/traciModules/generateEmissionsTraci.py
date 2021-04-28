@@ -1,9 +1,8 @@
 import os, sys
-import numpy as np
 import traci
 import sumolib
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from sumoplustools.emissions.generateEmissions import EmissionGenerator
 from sumoplustools import netHandler
 

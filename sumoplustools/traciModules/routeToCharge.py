@@ -4,11 +4,11 @@ import traci
 import numpy as np
 import xml.etree.ElementTree as ET
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from sumoplustools.stopsigns import stopHandler 
 
 class RerouteChargingDomain():
-    def __init__(self, sumocfgFile, connection : traci.Connection, netFile=None, addFiles=None):
+    def __init__(self, sumocfgFile, connection: traci.Connection, netFile: sumolib.net.Net=None, addFiles=None):
         self.sumocfgFile = sumocfgFile
         if netFile:
             self.net = netFile

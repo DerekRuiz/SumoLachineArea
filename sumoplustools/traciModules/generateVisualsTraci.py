@@ -1,12 +1,10 @@
 import os, sys
-import numpy as np
 from datetime import timedelta
 import traci
 import sumolib
 import geopandas as gpd
-import json
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from sumoplustools.postgresql.psqlObjects import VisualConnection
 from sumoplustools import netHandler
 

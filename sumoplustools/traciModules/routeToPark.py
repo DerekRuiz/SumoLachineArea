@@ -57,7 +57,7 @@ class RerouteChargingDomain():
         return parkingAreaElems
 
 
-    def getParkingAreaIDs(self) -> list(str):
+    def getParkingAreaIDs(self) -> list:
         return [elem.get("id") for elem in self.parkingElems]
 
     def getParkingAreaLanes(self) -> [(str, str)]:
