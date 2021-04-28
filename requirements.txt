@@ -1,0 +1,13 @@
+geopandas
+fiona
+GDAL
+shapely
+rtree
+opencv
+scikit-image
+tensorflow
+torch
+folium
+sumolib
+traci
+psycopg2
