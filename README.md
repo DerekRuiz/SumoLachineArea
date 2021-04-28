@@ -22,8 +22,7 @@ To run a SUMO simulation, ensure that SUMO is installed by downloading from the 
   * [Stop Signs](#-stop-signs-)
   * [Traffic Light Intersection](#-traffic-light-intersection-)
   * [Visualize](#-visualize-)
-  * [NetHandler.py](#-nethandler.py-)
-  * [Verbose.py](#-verbose.py-)
+  * [Common Modules](#-common-modules-)
 
 * [Pre-Built Functions](#-pre-built-functions-)
 * [Example Simulations](#-example-simulations-)
@@ -182,11 +181,12 @@ routeToCharge.py : Reroutes vehicles to the closest charging station when low on
 routeToPark.py : Reroutes vehicles to a proper parking location if they are in need of parking their vehicle. <br/>
 runWithTraci.py : Runs a SUMO simulation with the traCI program running in the program. This allows parallel integration of custom rerouting.
 
-<label><h3> NetHandler.py </h3></label>
-Contains basic functions for creating and handling SUMO network elements.
+<label><h3> Common Modules </h3></label>
+* NetHandler.py
+* Verbose.py
 
-<label><h3> Verbose.py </h3></label>
-Contains functions to detail current step of another programs process.
+NetHandler.py : Contains basic functions for creating and handling SUMO network elements. <br/>
+Verbose.py : Contains functions to detail current step of another programs process.
 
 <label><h2> Pre-Built Functions </h2></label>
 Note: All folders and files are located in the 'bin' directory <br/>
