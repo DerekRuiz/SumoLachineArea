@@ -191,13 +191,11 @@ Verbose.py : Contains functions to detail current step of another programs proce
 <label><h2> Pre-Built Functions </h2></label>
 Note: All folders and files are located in the 'bin' directory <br/>
 
-* buildRandomTrips.bat : Creates random trips for pedestrians, bicycles, motorcycles, passenger vehicles, trucks, buses, and railways.
-* createODTrips.bat : Creates SUMO route files for passenger vehicles, motorcycles, buses, and trucks using origin to destination matrices.
-* createOutputFiles.bat : Generates emission outputs, vehicles positions, lane changes, and VTK files.
-* createTLS.bat : Adds traffic lights and their programs to a SUMO network file.
-* downsizeMap.bat : Creates a SUMO network file from an OSM file and a boundry.
+* buildRandomTrips.py : Creates random trips for pedestrians, bicycles, motorcycles, passenger vehicles, trucks, buses, and railways.
+* createBusFiles.py : Creates SUMO route files for buses that take specified routes.
+* createODTrips.py : Creates SUMO route files for passenger vehicles, motorcycles, buses, and trucks using origin to destination matrices.
+* createOutputFiles.py : Generates emission outputs, vehicles positions, lane changes, and VTK files.
 * [osmconvert.exe](https://wiki.openstreetmap.org/wiki/Osmconvert) : Thrid party application that modifies osm files.
-* speedTestMontreal.bat : Tests the performance of a SUMO simulation with specific arguments.
 
 <label><h2> Example Simulations </h2></label>
 
