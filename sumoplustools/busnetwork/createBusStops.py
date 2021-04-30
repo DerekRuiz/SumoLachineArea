@@ -1,34 +1,32 @@
-import sys, os
+import os, sys
 import argparse
 import sumolib
 import geopandas as gpd
 from shapely.geometry import polygon
 from xml.etree import ElementTree as ET
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from sumoplustools import netHandler
 from sumoplustools import verbose
 
 def fillOptions(argParser):
     argParser.add_argument("-n", "--net-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="SUMO network file (mandatory)")
     argParser.add_argument("-s", "--bus-stops", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="the FILE containing the bus stops data. (mandatory)")
     argParser.add_argument("-o", "--output-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="the FILE output with the bus stops elements (mandatory)")
     argParser.add_argument("-v", "--verbose",
                             action="store_true", default=False,
                             help="gives description of current task")
 
-
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Create additional file with the bus stops from shape-like file")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
-
 
 if __name__ == "__main__":
     options, argParser = parse_args()

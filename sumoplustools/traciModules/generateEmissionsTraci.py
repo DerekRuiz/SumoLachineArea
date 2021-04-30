@@ -14,7 +14,7 @@ class TraciEmissions(EmissionGenerator):
     def resetLastSave(self):
         self._lastSave = None
     
-    def verifyEmissionCollection(self, fromStep, toStep, timeInterval, eTypes, connection : traci.Connection) -> bool:
+    def verifyEmissionCollection(self, fromStep, toStep, timeInterval, eTypes, connection: traci.Connection) -> bool:
         '''
         Pre condition to verify if vehicle emissions should be collected for the current time.\n
         Saves the vehicles emissions if appropriate to the current time.\n
@@ -53,7 +53,7 @@ class TraciEmissions(EmissionGenerator):
 
         return True
 
-    def collectVehicleEmissions(self, vehID, connection : traci.Connection):
+    def collectVehicleEmissions(self, vehID, connection: traci.Connection):
         '''
         Collects the emission data of the vehicle at the current time.
         '''
@@ -74,7 +74,7 @@ class TraciEmissions(EmissionGenerator):
 
             self.addOutputs(vehID, edgeID, emission_output)
 
-    def collectEmissions(self, fromStep, toStep, timeInterval, eTypes, connection : traci.Connection):
+    def collectEmissions(self, fromStep, toStep, timeInterval, eTypes, connection: traci.Connection):
         """
         Collects the emission data of the current time step.\n
         Only if the current time step falls within fromStep and toStep (not included) is the emission data collected.

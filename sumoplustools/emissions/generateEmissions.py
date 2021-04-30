@@ -4,10 +4,8 @@ from datetime import timedelta
 from xml.etree import ElementTree as ET
 import sumolib
 import geopandas as gpd
-from rtree import index
-from shapely.geometry import LineString
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from sumoplustools.emissions import emissionIO as eio
 from sumoplustools.postgresql.psqlObjects import EmissionConnection
 from sumoplustools import verbose
@@ -17,10 +15,10 @@ class EmissionGenerator():
     _MAP_ETYPE_TO_INDEX = {"FUEL":0,"CO2":1,"CO":2,"HC":3,"NOX":4,"PMX":5}
 
     @staticmethod
-    def mapEtypeToIndex(eType : str) -> int:
+    def mapEtypeToIndex(eType: str) -> int:
         return EmissionGenerator._MAP_ETYPE_TO_INDEX[eType.upper()]
     
-    def __init__(self, net : sumolib.net.Net):
+    def __init__(self, net: sumolib.net.Net):
         self.sqlConnection = EmissionConnection()
         self.net = net
         self.mapNetToDF = self.sqlConnection.getNetToDFMap()
@@ -169,7 +167,6 @@ class EmissionGenerator():
                         edgeID = edgeObj.getID()
                     
                     self.addOutputs(vehID, edgeID, emission_output)
-                    
 
             elem.clear()
             del elem
@@ -186,7 +183,7 @@ class EmissionGenerator():
         eio.removeProjectTempFolder()
         self.sqlConnection.close()
 
-def generateEmissionDataFrame(net : sumolib.net.Net, fromStep, toStep, timeInterval, stepLength, eTypes, xmlSource, filename=None):
+def generateEmissionDataFrame(net: sumolib.net.Net, fromStep, toStep, timeInterval, stepLength, eTypes, xmlSource, filename=None):
     """
     Convenience function to create EmissinoGeneration object and call collectEmissions and saveDataFrame methods
     """
@@ -220,31 +217,31 @@ if __name__ == "__main__":
     
     def fillOptions(argParser):
         argParser.add_argument("-n", "--net-file", 
-                                metavar="FILE", required=True,
+                                metavar="FILE", type=str, required=True,
                                 help="read SUMO network from FILE (mandatory)")
         argParser.add_argument("-e", "--emission-file",
-                                metavar="FILE", required=True,
+                                metavar="FILE", type=str, required=True,
                                 help="use FILE to populate data using XML (mandatory)")
         argParser.add_argument("-t", "--emission-types", 
-                                type=str, metavar='STR[,STR]*', required=True,
+                                metavar='STR[,STR]*', type=str, required=True,
                                 help="the emission types that will be collected and saved. Separate types with a comma (mandatory)")
         argParser.add_argument("-o", "--output-file", 
-                                metavar="FILE",
+                                metavar="FILE", type=str,
                                 help="save emissions with prefix to FILE")
         argParser.add_argument("-s", "--start-time",
-                                metavar='INT[:INT:INT]',
+                                metavar='INT[:INT:INT]', type=str,
                                 help="initial time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Starts at begining if omitted")
         argParser.add_argument("-f", "--finish-time",
-                                metavar='INT[:INT:INT]',
+                                metavar='INT[:INT:INT]', type=str,
                                 help="last time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Terminates 1 second after start if omitted")
         argParser.add_argument("-d", "--duration",
-                                metavar='INT[:INT:INT]',
+                                metavar='INT[:INT:INT]', type=str,
                                 help="amount of time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Terminates after 1 second has elapsed if omitted. Has priority over --finish-time")
         argParser.add_argument("-g", "--go-to-end",
                                 action='store_true', dest='toEnd', default=False,
                                 help="collect data until the end of file. Has priority over --duration")
         argParser.add_argument("-i", "--time-interval",
-                                metavar='INT[:INT:INT]',
+                                metavar='INT[:INT:INT]', type=str,
                                 help="save the emissions every interval. Can be in seconds or with format of 'hr:min:sec'. Interval equals 1 timestep if omitted")
         argParser.add_argument("-v", "--verbose",
                                 action='store_true', default=False,

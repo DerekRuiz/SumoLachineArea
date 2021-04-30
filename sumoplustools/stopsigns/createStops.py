@@ -2,20 +2,20 @@ import os, sys
 import argparse
 import sumolib
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from sumoplustools import netHandler
 from sumoplustools import verbose
 from sumoplustools.stopsigns import stopHandler
 
 def fillOptions(argParser):
     argParser.add_argument("-n", "--sumo-network-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="SUMO network FILE (mandatory)")
     argParser.add_argument("-r", "--route-file",
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="update routes in FILE (mandatory)")
     argParser.add_argument("-o", "--output-file",
-                            metavar="FILE",
+                            metavar="FILE", type=str,
                             help="write new route to FILE. Writes to --route-file FILE if unspecified")
     argParser.add_argument("-v", "--vehicle-class",
                             metavar="STR", type=str, default="passenger", 
@@ -25,7 +25,6 @@ def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Add stops to the routes/trips of vehicles")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
-
 
 if __name__ == "__main__":
     options, argParser = parse_args()

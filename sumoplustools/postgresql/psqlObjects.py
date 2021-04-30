@@ -1,8 +1,5 @@
 import psycopg2, psycopg2.extras
-from psycopg2 import errors as sqlerror
-from psycopg2 import errorcodes
 from datetime import datetime, timedelta
-import numpy as np
 import geopandas as gpd
 
 class SQLConnection():

@@ -1,6 +1,7 @@
-
+import os
 import argparse
-from os import path
+import sumolib
+import pandas as pd
 
 def setStatePed(edges):
     state = ''
@@ -9,40 +10,33 @@ def setStatePed(edges):
         state += 'r'
     return state
 
-
 def fillOptions(argParser):
     argParser.add_argument("-n", "--sumo-net-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="Read SUMO-net from FILE")
     argParser.add_argument("-c", "--csv-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="Read TLS schedules from FILE")
     argParser.add_argument("-o", "--programs-output-file", 
-                            metavar="FILE", default='tlsPrograms.add.xml',
+                            metavar="FILE", type=str, default='tlsPrograms.add.xml',
                             help="The generated TLS programs will be written to FILE")
-
 
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Creates an additional file containing the programs of traffic lights")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
 
-
 if __name__ == "__main__":
     options, argParser = parse_args()
 
     # Set net file
-    if not path.exists(options.sumo_net_file):
+    if not os.path.exists(options.sumo_net_file):
         argParser.exit("Error! Net file not found")
 
     # Set csv file
-    if not path.exists(options.csv_file):
+    if not os.path.exists(options.csv_file):
         argParser.exit("Error! CSV file not found")
 
-    import sumolib
-    import pandas as pd
-    from xml.etree import ElementTree as ET
-    from shapely.geometry import polygon
 
     net = sumolib.net.readNet(options.sumo_net_file)
 

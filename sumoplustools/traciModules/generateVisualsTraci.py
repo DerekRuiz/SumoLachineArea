@@ -65,7 +65,7 @@ class TraciVisuals():
         df.to_csv(filename)
         return df
     
-    def verifyVisualCollection(self, fromStep, toStep, connection : traci.Connection) -> bool:
+    def verifyVisualCollection(self, fromStep, toStep, connection: traci.Connection) -> bool:
         '''
         Pre condition to verify if vehicle visualization should be collected for the current time.\n
         Saves the vehicles visualization if appropriate to the current time.\n
@@ -96,7 +96,7 @@ class TraciVisuals():
 
         return True
 
-    def collectVehicleVisuals(self, vehID, connection : traci.Connection):
+    def collectVehicleVisuals(self, vehID, connection: traci.Connection):
         '''
         Collects the visualization data of the vehicle at the current time.
         '''

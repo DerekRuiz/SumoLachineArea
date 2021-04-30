@@ -1,38 +1,33 @@
-
 import os, sys
 import argparse
 import sumolib
 import geopandas as gpd
 from xml.etree import ElementTree as ET
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from sumoplustools import verbose
-
-
 
 def fillOptions(argParser):
     argParser.add_argument("-n", "--sumo-net-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="conversion to SUMO coords using FILE (mandatory)")
     argParser.add_argument("-c", "--census-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="create districts based from shape-like FILE (mandatory)")
     argParser.add_argument("-b", "--boundary-file", 
-                            metavar="FILE",
+                            metavar="FILE", type=str,
                             help="boundary shape-like FILE to limit the area of the census")
     argParser.add_argument("-o", "--output-file",
-                            metavar="FILE", default="taz.add.xml",
+                            metavar="FILE", type=str, default="taz.add.xml",
                             help="TAZ data is save to FILE")
     argParser.add_argument("-v", "--verbose",
                             action="store_true", default=False,
                             help="gives description of current task")
 
-    
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Create additional file containing the traffic analysis zones used for SUMO districts.")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
-
 
 if __name__ == "__main__":
     options, argParser = parse_args()

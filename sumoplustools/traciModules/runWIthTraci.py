@@ -1,4 +1,3 @@
-
 import os, sys
 import argparse
 import sumolib
@@ -14,7 +13,7 @@ from sumoplustools.traciModules.generateVisualsTraci import TraciVisuals
 def fillOptions(argParser):
     generalGroup = argParser.add_argument_group("General")
     generalGroup.add_argument("-c", "--sumo-config-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="use FILE to populate data using TraCI (mandatory)")
     generalGroup.add_argument("-g", "--gui", 
                             action='store_true', default=False,
@@ -23,7 +22,7 @@ def fillOptions(argParser):
                             action="store_true", default=False,
                             help="starts the simulation automatically after the GUI is loaded")
     generalGroup.add_argument("-t", "--traci-commands",
-                            type=str, metavar='"--CMD ARG[,] "*',
+                            metavar='"--CMD ARG[,] "*', type=str,
                             help="TraCI commands to be added when TraCI starts. Commands can be seperated by a ',' (comma) or a ' ' (space)")
 
     visualGroup = argParser.add_argument_group("Generate Visuals")
@@ -31,13 +30,13 @@ def fillOptions(argParser):
                             action='store_true', default=False,
                             help="generate visualization data for each vehicle")
     visualGroup.add_argument("--visual-start",
-                            metavar='INT[:INT:INT]',
+                            metavar='INT[:INT:INT]', type=str,
                             help="initial time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Starts at beginning if omitted")
     visualGroup.add_argument("--visual-finish",
-                            metavar='INT[:INT:INT]',
+                            metavar='INT[:INT:INT]', type=str,
                             help="last time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Terminates 1 second after start if omitted")
     visualGroup.add_argument("--visual-duration",
-                            metavar='INT[:INT:INT]',
+                            metavar='INT[:INT:INT]', type=str,
                             help="amount of time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Terminates after 1 second has elapsed if omitted. Has priority over --finish-time")
     visualGroup.add_argument("--visual-to-end",
                             action='store_true', dest='visualToEnd', default=False,
@@ -48,25 +47,25 @@ def fillOptions(argParser):
                             action='store_true', default=False,
                             help="generate emission outputs")
     emissionGroup.add_argument("--emission-types", 
-                            type=str, metavar='STR[,STR]*', required='--generate-emissions' in sys.argv or '-e' in sys.argv,
+                            metavar='STR[,STR]*', type=str, required='--generate-emissions' in sys.argv or '-e' in sys.argv,
                             help="the emission types that will be collected and saved. Separate types with a comma (mandatory)")
     emissionGroup.add_argument("--emission-output-file", 
-                            metavar="FILE",
+                            metavar="FILE", type=str,
                             help="save emissions with prefix to FILE")
     emissionGroup.add_argument("--emission-start",
-                            metavar='INT[:INT:INT]',
+                            metavar='INT[:INT:INT]', type=str,
                             help="initial time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Starts at beginning if omitted")
     emissionGroup.add_argument("--emission-finish",
-                            metavar='INT[:INT:INT]',
+                            metavar='INT[:INT:INT]', type=str,
                             help="last time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Terminates 1 second after start if omitted")
     emissionGroup.add_argument("--emission-duration",
-                            metavar='INT[:INT:INT]',
+                            metavar='INT[:INT:INT]', type=str,
                             help="amount of time that data is collected from. Can be in seconds or with format of 'hr:min:sec'. Terminates after 1 second has elapsed if omitted. Has priority over --finish-time")
     emissionGroup.add_argument("--emission-to-end",
                             action='store_true', dest='emissionToEnd', default=False,
                             help="collect data until the end of simulation. Has priority over --duration")
     emissionGroup.add_argument("--emission-interval",
-                            metavar='INT[:INT:INT]',
+                            metavar='INT[:INT:INT]', type=str,
                             help="save the emissions every interval. Can be in seconds or with format of 'hr:min:sec'. Interval equals 1 timestep if omitted")
 
     batteryGroup = argParser.add_argument_group("Battery Vehicles")
@@ -74,10 +73,10 @@ def fillOptions(argParser):
                             action='store_true', default=False,
                             help="reroutes battery type vehicles to charging stations when low on battery")
     batteryGroup.add_argument("--reroute-start",
-                            metavar='FLOAT', default=20,
+                            metavar='FLOAT', type=float, default=20,
                             help="percentage of the battery when vehicles reroute to a charging station. Default is 20%%")
     batteryGroup.add_argument("--reroute-finish",
-                            metavar='FLOAT', default=80,
+                            metavar='FLOAT', type=float, default=80,
                             help="percentage of the battery when vehicles stop charging. Default is 80%%")
     batteryGroup.add_argument("--reroute-random",
                             action='store_true', default=False,
@@ -87,7 +86,6 @@ def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Start SUMO simulation and manipulate the simulation with traci",usage="%s [-h] -c FILE [-g] [-s] [--generate-visuals] [--generate-emissions] [--reroute-charging]" % os.path.basename(__file__))
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
-
 
 if __name__ == "__main__":
     options, argParser = parse_args()
@@ -302,20 +300,3 @@ if __name__ == "__main__":
         connection.close()
     except traci.FatalTraCIError:
         pass
-
-
-'''cd C:/Users/epicb/Documents/GitHub/SumoLachineArea/Montreal
-python ../bin/runwithtraci.py -c montreal.sumocfg -e --emission-to-end --emission-types fuel
-python ../bin/runwithtraci.py -c montreal.sumocfg -v --visual-to-end
-
-10 000:
--v save to sql -> 0.245, 0.245, 0.452
-
-100 000:
--v save to sql -> 0.254, 0.248, 0.249, 0.484, 0.448
-
--e -v -> [500 veh] 0.513, 0.531, 0.501 [1000 veh] 0.979, 0.935, 0.936
-
-1 veh -> 0.001 sec to compute
-
-'''

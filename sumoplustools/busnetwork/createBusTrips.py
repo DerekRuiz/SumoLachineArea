@@ -1,35 +1,33 @@
-import sys, os
+import os, sys
 import argparse
 import sumolib
 from xml.etree import ElementTree as ET
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from sumoplustools import netHandler
 from sumoplustools import verbose
 
 def fillOptions(argParser):
     argParser.add_argument("-l", "--bus-lines", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="the FILE containing the SUMO bus routes (mandatory)")
     argParser.add_argument("-o", "--output-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="the FILE output with the bus trips elements (mandatory)")
     argParser.add_argument("-n", "--vehicles-per-line", 
-                            metavar="INT", default=1, dest="numBuses", type=int,
+                            metavar="INT", type=int, default=1, dest="numBuses",
                             help="the number of buses on a line")
     argParser.add_argument("-i", "--interval",
-                            metavar="FLOAT", default=0.0, type=float,
+                            metavar="FLOAT", type=float, default=0.0,
                             help="time interval (in seconds) between two buses departing on the same route")
     argParser.add_argument("-v", "--verbose",
                             action="store_true", default=False,
                             help="gives description of current task")
 
-
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Create route file with the bus trips")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
-
 
 if __name__ == "__main__":
     options, argParser = parse_args()

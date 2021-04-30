@@ -1,28 +1,27 @@
-
 import os, sys
 import argparse
 import sumolib
 import numpy as np
 import geopandas as gpd
 import time
-from shapely.geometry import Polygon, Point, MultiLineString
+from shapely.geometry import Polygon, Point
 from xml.etree import ElementTree as ET
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from sumoplustools import verbose
 
 def fillOptions(argParser):
     argParser.add_argument("-n", "--sumo-net-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="conversion to SUMO coords using FILE (mandatory)")
     argParser.add_argument("-t", "--taz-add-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="gets districts from FILE (mandatory)")
     argParser.add_argument("-od", "--origin-dest-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="OD trip data in FILE that uses geometry column by default (mandatory)")
     argParser.add_argument("-o", "--output-file",
-                            metavar="FILE", default="tazMatrix",
+                            metavar="FILE", type=str, default="tazMatrix",
                             help="OD matrix is save to FILE")
     argParser.add_argument("--ori-lon", 
                             metavar="STR", type=str,
@@ -52,12 +51,10 @@ def fillOptions(argParser):
                             action="store_true", default=False,
                             help="gives description of current task")
 
-    
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Create OD matrix files based on OD trips data")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
-
 
 if __name__ == "__main__":
     options, argParser = parse_args()

@@ -2,7 +2,6 @@ import argparse
 import xml.etree.ElementTree as ET
 
 def writeToFile(options):
-    
     od_tree = ET.parse(options.odtrip_file)
     root = od_tree.getroot()
     if root.tag != "routes":
@@ -28,20 +27,19 @@ def writeToFile(options):
 
 def fillOptions(argParser):
     argParser.add_argument("-od", "--odtrip-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="write class type to FILE (mandatory)")
     argParser.add_argument("-i", "--vehicle-id", 
-                            type=str, default="veh_passenger", metavar="STR",
+                            metavar="STR", type=str, default="veh_passenger",
                             help="assigns a vehicle type this id")
     argParser.add_argument("-v", "--vehicle-class", 
-                            type=str, default="passenger", metavar="STR",
+                            metavar="STR", type=str, default="passenger",
                             help="assigns a vehicle type this class")
 
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Adds class type from vehicle type to OD trips")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
-
 
 if __name__ == "__main__":
     options, argParser = parse_args()

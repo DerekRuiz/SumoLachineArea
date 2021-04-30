@@ -1,14 +1,16 @@
 import argparse
+import sumolib
+from xml.etree import ElementTree as ET
 
 def fillOptions(argParser):
     argParser.add_argument("-n", "--sumo-network-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="SUMO network FILE (mandatory)")
     argParser.add_argument("-t", "--trips-file",
-                            metavar="FILE",  required=True,
+                            metavar="FILE", type=str, required=True,
                             help="update trips to FILE (mandatory)")
     argParser.add_argument("-v", "--vehicle-class",
-                            type=str, default="passenger", metavar="STR",
+                            metavar="STR", type=str, default="passenger",
                             help="validates trips for vehicles of this type")
 
 def parse_args(args=None):
@@ -16,12 +18,8 @@ def parse_args(args=None):
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
 
-
 if __name__ == "__main__":
     options, argParser = parse_args()
-
-    import sumolib
-    from xml.etree import ElementTree as ET
 
     net = sumolib.net.readNet(options.sumo_network_file)
 

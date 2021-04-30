@@ -2,23 +2,21 @@ from xml.etree import ElementTree as ET
 import os
 import argparse
 
-
 def fillOptions(argParser):
     argParser.add_argument("-o", "--od-matrix-dir", 
-                            metavar="DIR", required=True,
+                            metavar="DIR", type=str, required=True,
                             help="DIR where all od-matrices are located")
     argParser.add_argument("-c", "--config-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="update FILE to reference origin destination matrices")
     argParser.add_argument("-t", "-taz-file",
-                            metavar="FILE",
+                            metavar="FILE", type=str,
                             help="use FILE to indicate boundaries of zones")
 
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Updates the matrix configuration file to reference all origin destination matrices")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
-
 
 if __name__ == "__main__":
     options, argParser = parse_args()

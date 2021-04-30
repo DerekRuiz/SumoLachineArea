@@ -1,23 +1,19 @@
-
 import json
 import argparse
 
 
 def fillOptions(argParser):
     argParser.add_argument("-g", "--montreal-geometry", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="montreal geometry using geojson (mandatory)")
     argParser.add_argument("-p", "--polygon-file", 
-                            metavar="FILE", default="boundary.poly",
+                            metavar="FILE", type=str, default="boundary.poly",
                             help="write polygons to FILE (mandatory)")
-    
-
 
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Create polygon file to get the shape of the map")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
-
 
 if __name__ == "__main__":
     options, argParser = parse_args()

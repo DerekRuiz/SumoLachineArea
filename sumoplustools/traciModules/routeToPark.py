@@ -1,10 +1,10 @@
-import os, sys
+import os
 import numpy as np
 import traci
 import xml.etree.ElementTree as ET
 
 class RerouteChargingDomain():
-    def __init__(self, sumocfgFile, connection : traci.Connection, netFile=None, addFiles=None):
+    def __init__(self, sumocfgFile, connection: traci.Connection, netFile=None, addFiles=None):
         self.sumocfgFile = sumocfgFile
         if netFile:
             self.net = netFile

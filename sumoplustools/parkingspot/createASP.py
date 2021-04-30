@@ -3,28 +3,28 @@ import argparse
 import sumolib
 import xml.etree.ElementTree as ET
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from sumoplustools import netHandler
 from sumoplustools import verbose
 
 def fillOptions(argParser):
     argParser.add_argument("-p", "--parking-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="get parking locations from FILE (mandatory)")
     argParser.add_argument("-n", "--network-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="SUMO network file (mandatory)")
     argParser.add_argument("-o", "--output-file", 
-                            metavar="FILE", required=True,
+                            metavar="FILE", type=str, required=True,
                             help="saves SUMO additional to FILE (mandatory)")
-    argParser.add_argument("-d", "--default", 
+    argParser.add_argument("-d", "--default",
                             action='store_true', default=False,
                             help="place parking is default zones (residential, tertiary)")
+
 def parse_args(args=None):
     argParser = argparse.ArgumentParser(description="Adds Alternative Side Parking to additional file")
     fillOptions(argParser)
     return argParser.parse_args(args), argParser
-
 
 if __name__ == "__main__":
     options, argParser = parse_args()
